@@ -12,15 +12,9 @@ namespace AzureFunctionTier
             builder.Services.AddCosmosRepository(options =>
             {
                 options.ContainerPerItemType = true;
-                // options.ContainerBuilder.Configure<User>(containerOptions => containerOptions
-                //     .WithContainer("users")
-                //     .WithPartitionKey("/emailAddress")
-                //     .WithContainerDefaultTimeToLive(TimeSpan.FromMinutes(1))
-                //     .WithManualThroughput(500)
-                //     .WithSyncableContainerProperties()
-                // );
             });
-            builder.Services.AddTransient<Game>();
+            builder.Services.AddScoped<Game>();
+            builder.Services.AddScoped<IWordsDictionaryService, InMemoryWordsDictionaryService>();
         }
     }
 }
