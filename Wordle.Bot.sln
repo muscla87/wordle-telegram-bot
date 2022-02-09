@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wordle.Engine", "Wordle.Engine\Wordle.Engine.csproj", "{49DC1509-BD96-40D9-B83A-C31E18605E84}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wordle.Bot.Functions", "Wordle.Bot.Functions\Wordle.Bot.Functions.csproj", "{AC7A00B2-04AD-424A-AADC-79469723572C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wordle.Engine.Test", "Wordle.Engine.Test\Wordle.Engine.Test.csproj", "{9847B5BC-FB2A-465C-B9C6-0DA9B05B65D7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{49DC1509-BD96-40D9-B83A-C31E18605E84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49DC1509-BD96-40D9-B83A-C31E18605E84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49DC1509-BD96-40D9-B83A-C31E18605E84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49DC1509-BD96-40D9-B83A-C31E18605E84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC7A00B2-04AD-424A-AADC-79469723572C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC7A00B2-04AD-424A-AADC-79469723572C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC7A00B2-04AD-424A-AADC-79469723572C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC7A00B2-04AD-424A-AADC-79469723572C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9847B5BC-FB2A-465C-B9C6-0DA9B05B65D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9847B5BC-FB2A-465C-B9C6-0DA9B05B65D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9847B5BC-FB2A-465C-B9C6-0DA9B05B65D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9847B5BC-FB2A-465C-B9C6-0DA9B05B65D7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
