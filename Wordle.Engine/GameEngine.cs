@@ -7,7 +7,7 @@ namespace Wordle.Engine
         private readonly IWordsDictionaryService wordDictionaryService;
 
         private GamePhase CurrentPhase { get; set; }
-        private string? WordToGuess { get; set; }
+        private string WordToGuess { get; set; } = string.Empty;
         private List<string> Attempts { get; set; } = new List<string>();
         private List<PositionMatchMask[]> AttemptsMask { get; set; } = new List<PositionMatchMask[]>();
         private bool IsWordGuessed { get; set; }

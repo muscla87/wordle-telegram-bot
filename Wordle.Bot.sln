@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wordle.Bot.Functions", "Wor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wordle.Engine.Test", "Wordle.Engine.Test\Wordle.Engine.Test.csproj", "{9847B5BC-FB2A-465C-B9C6-0DA9B05B65D7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BehaviourTree", "BehaviourTree\BehaviourTree.csproj", "{1DE0D2A5-2950-4AC8-B458-0732674D56B6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BehaviourTree.Test", "BehaviourTree.Test\BehaviourTree.Test.csproj", "{79B4A9E8-CFDD-4FD1-8FAA-51E05A31799A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +34,13 @@ Global
 		{9847B5BC-FB2A-465C-B9C6-0DA9B05B65D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9847B5BC-FB2A-465C-B9C6-0DA9B05B65D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9847B5BC-FB2A-465C-B9C6-0DA9B05B65D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DE0D2A5-2950-4AC8-B458-0732674D56B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DE0D2A5-2950-4AC8-B458-0732674D56B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DE0D2A5-2950-4AC8-B458-0732674D56B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DE0D2A5-2950-4AC8-B458-0732674D56B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79B4A9E8-CFDD-4FD1-8FAA-51E05A31799A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79B4A9E8-CFDD-4FD1-8FAA-51E05A31799A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79B4A9E8-CFDD-4FD1-8FAA-51E05A31799A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79B4A9E8-CFDD-4FD1-8FAA-51E05A31799A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

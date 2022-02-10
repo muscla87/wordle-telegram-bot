@@ -87,13 +87,18 @@ namespace Wordle.Bot.Functions
             StringBuilder strBuilder = new StringBuilder();
             strBuilder.Append("`");
 
-            for (int c = 0; c < gameState.Attempts[0].Length; c++)
+            for (int i = 0; i < gameState.Attempts.Count; i++)
             {
-                for (int i = 0; i < gameState.Attempts.Count; i++)
+                for (int c = 0; c < gameState.Attempts[0].Length; c++)
                 {
-                    strBuilder.Append("" + gameState.Attempts[i].ToUpperInvariant()[c] + " ");
+                    strBuilder.Append(" " + gameState.Attempts[i].ToUpperInvariant()[c] + " ");
+                }
+                strBuilder.AppendLine();
+                for (int c = 0; c < gameState.Attempts[0].Length; c++)
+                {
                     strBuilder.Append("" + GetMatchSymbol(gameState.AttemptsMask[i][c]) + " ");
                 }
+                strBuilder.AppendLine();
                 strBuilder.AppendLine();
             }
             strBuilder.Append("`");

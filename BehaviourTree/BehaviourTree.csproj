@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <PackageId>BehaviourTree</PackageId>
+	  <PackageVersion>1.0.0</PackageVersion>
+    <PackageTags>c# behavior behaviour tree behaviourtree behaviortree ai bot</PackageTags>
+    <Description>A simple c# behaviour tree library.</Description>
+    <RepositoryUrl>https://github.com/Eraclys/BehaviourTree/</RepositoryUrl>
+    <PackageLicenseUrl>https://github.com/Eraclys/BehaviourTree/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/Eraclys/BehaviourTree/</PackageProjectUrl>
+  </PropertyGroup>
+
+  <!-- <ItemGroup>
+    <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
+  </ItemGroup> -->
+
+</Project>
