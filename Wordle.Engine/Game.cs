@@ -20,7 +20,7 @@ namespace Wordle.Engine
             {
                 await GameEngine.InitializeGameState(gameState.GameEngineState);
             }
-        }
+        }   
 
         public async Task SaveGameStateAsync(long chatId)
         {
@@ -37,6 +37,15 @@ namespace Wordle.Engine
                 await _gameStateRepository.UpdateAsync(gameState);
             else
                 await _gameStateRepository.CreateAsync(gameState);
+        }
+
+        public async Task DeleteGameStateAsync(long chatId)
+        {
+            var gameState = (await _gameStateRepository.GetAsync(x => x.Id == chatId.ToString())).FirstOrDefault();
+            if (gameState != null)
+            {
+                await _gameStateRepository.DeleteAsync(gameState);
+            }
         }
     }
 }
