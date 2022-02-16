@@ -1,9 +1,6 @@
 using Xunit;
 using Wordle.Engine;
-using System;
 using System.Linq;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using Moq;
 using System.Threading.Tasks;
 
@@ -143,8 +140,9 @@ public class GameEngine_Setup_Tests
         wordsDictionary.Setup(x => x.PickWordToGuess())
                             .Returns(Task.FromResult(wordToMatch));
         var gameEngine = new GameEngine(wordsDictionary.Object);
-        
-        for (int i = 0; i < 5; i++)
+
+        var maxAttempts = gameEngine.GetGameEngineState().MaxAttempts;
+        for (int i = 0; i < maxAttempts; i++)
         {
             (var wordEvaluationResult, var newGameState) = await gameEngine.SubmitWord(wordToSubmit);
         }
@@ -163,8 +161,8 @@ public class GameEngine_Setup_Tests
         wordsDictionary.Setup(x => x.PickWordToGuess())
                             .Returns(Task.FromResult(wordToMatch));
         var gameEngine = new GameEngine(wordsDictionary.Object);
-        
-        for (int i = 0; i < 5; i++)
+        var maxAttempts = gameEngine.GetGameEngineState().MaxAttempts;
+        for (int i = 0; i < maxAttempts; i++)
         {
             (_, _) = await gameEngine.SubmitWord(wordToSubmit);
         }
@@ -176,6 +174,72 @@ public class GameEngine_Setup_Tests
         Assert.Equal(prevGameState.AttemptsMask, finalGameState.AttemptsMask);
         Assert.Equal(prevGameState.IsWordGuessed, finalGameState.IsWordGuessed);
         Assert.Equal(prevGameState.WordToGuess, finalGameState.WordToGuess);
+    }
+
+    [Fact]
+    public async void SubmitWordWith2MatchingChars_Expects_OneMatchAndOneNotMatched()
+    {
+        string wordToSubmit = "knock";
+        string wordToMatch = "think";
+        wordsDictionary.Setup(x => x.IsWordValid(wordToSubmit))
+                            .Returns(Task.FromResult(true));
+        wordsDictionary.Setup(x => x.PickWordToGuess())
+                            .Returns(Task.FromResult(wordToMatch));
+        var gameEngine = new GameEngine(wordsDictionary.Object);
+        (_, var newGameState) = await gameEngine.SubmitWord(wordToSubmit);
+
+        var expectedResult = new [] {
+            PositionMatchMask.NotMatched,
+            PositionMatchMask.MatchInOtherPosition,
+            PositionMatchMask.NotMatched,
+            PositionMatchMask.NotMatched,
+            PositionMatchMask.Matched
+        };
+        Assert.Equal(expectedResult, newGameState.AttemptsMask[0]);
+    }
+
+    [Fact]
+    public async void SubmitWordWith2MatchingChars_Expects_OneMatchAndOneMatchInOtherPosition()
+    {
+        string wordToSubmit = "laaal";
+        string wordToMatch = "skill";
+        wordsDictionary.Setup(x => x.IsWordValid(wordToSubmit))
+                            .Returns(Task.FromResult(true));
+        wordsDictionary.Setup(x => x.PickWordToGuess())
+                            .Returns(Task.FromResult(wordToMatch));
+        var gameEngine = new GameEngine(wordsDictionary.Object);
+        (_, var newGameState) = await gameEngine.SubmitWord(wordToSubmit);
+
+        var expectedResult = new [] {
+            PositionMatchMask.MatchInOtherPosition,
+            PositionMatchMask.NotMatched,
+            PositionMatchMask.NotMatched,
+            PositionMatchMask.NotMatched,
+            PositionMatchMask.Matched
+        };
+        Assert.Equal(expectedResult, newGameState.AttemptsMask[0]);
+    }
+
+    [Fact]
+    public async void SubmitWordWith2MatchingChars_Expects__OneMatchInOtherPositionAndOneNotMatch()
+    {
+        string wordToSubmit = "llbbb";
+        string wordToMatch = "aaaal";
+        wordsDictionary.Setup(x => x.IsWordValid(wordToSubmit))
+                            .Returns(Task.FromResult(true));
+        wordsDictionary.Setup(x => x.PickWordToGuess())
+                            .Returns(Task.FromResult(wordToMatch));
+        var gameEngine = new GameEngine(wordsDictionary.Object);
+        (_, var newGameState) = await gameEngine.SubmitWord(wordToSubmit);
+
+        var expectedResult = new [] {
+            PositionMatchMask.MatchInOtherPosition,
+            PositionMatchMask.NotMatched,
+            PositionMatchMask.NotMatched,
+            PositionMatchMask.NotMatched,
+            PositionMatchMask.NotMatched
+        };
+        Assert.Equal(expectedResult, newGameState.AttemptsMask[0]);
     }
    
 }
