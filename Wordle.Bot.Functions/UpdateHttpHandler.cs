@@ -46,6 +46,7 @@ namespace Wordle.Bot.Functions
                     MessageId = update.Message.MessageId,
                     Message = update.Message.Text,
                     BotClient = _botClient,
+                    PlayerName = update.Message.From?.FirstName ?? update.Message.From?.Username ?? "Player",
                     Game = _game
                 };
 

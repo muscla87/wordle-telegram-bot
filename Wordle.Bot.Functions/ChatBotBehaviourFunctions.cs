@@ -14,7 +14,7 @@ internal static class ChatBotBehaviourFunctions
 {
     public static bool IsCommand(this GameContext context, string command)
     {
-        return context.Message.StartsWith($"/{command}", StringComparison.OrdinalIgnoreCase);
+        return context.Message.Equals($"/{command}", StringComparison.OrdinalIgnoreCase);
     }
 
     public static bool IsMessage(this GameContext context, string message)
@@ -49,7 +49,16 @@ internal static class ChatBotBehaviourFunctions
     {
         var botClient = context.BotClient;
         botClient.SendTextMessageAsync(chatId: context.ChatId,
-                                        text: $"Welcome").Wait();
+                                        parseMode: ParseMode.MarkdownV2,
+                                        text: $"✨Welcome✨ *{context.PlayerName}*\\! I am happy you came here to play ❤️\nSend /newgame command to start playing\\!").Wait();
+        return BehaviourStatus.Succeeded;
+    }
+
+    public static BehaviourStatus SendGameAlreadyStartedMessage(this GameContext context)
+    {
+        var botClient = context.BotClient;
+        botClient.SendTextMessageAsync(chatId: context.ChatId,
+                                        text: $"🎮 A game is in progress. Are you able to guess the word? 🕹️").Wait();
         return BehaviourStatus.Succeeded;
     }
 
@@ -74,7 +83,7 @@ Examples
             var botClient = context.BotClient;
             botClient.SendPhotoAsync(chatId: context.ChatId,
                                         photo: new InputOnlineFile(ms),
-                                        parseMode: Telegram.Bot.Types.Enums.ParseMode.MarkdownV2,
+                                        parseMode: ParseMode.MarkdownV2,
                                         caption: instructions).Wait();
         }
         return BehaviourStatus.Succeeded;
@@ -142,12 +151,17 @@ Examples
     public static BehaviourStatus SendEndOfGameMessage(this GameContext context)
     {
         var botClient = context.BotClient;
-        var wordToGuess = context.Game.GameEngine.GetGameEngineState().WordToGuess;
+        var gameState = context.Game.GameEngine.GetGameEngineState();
+        var wordToGuess = $"*[{gameState.WordToGuess}](https://dictionary.cambridge.org/dictionary/english/{gameState.WordToGuess})*";
+        var resultMessage = gameState.IsWordGuessed ? $"🎉 Congratulations, you guessed the word {wordToGuess} in {gameState.Attempts.Count} guesses\\! 🎉" :
+                                                      $"🙇 Sorry, you didn't guess the word {wordToGuess} 🙇";  
         botClient.SendTextMessageAsync(chatId: context.ChatId,
                                         parseMode: ParseMode.MarkdownV2,
-                                        text: @$"The word to guess was *{wordToGuess}*
+                                        text: resultMessage).Wait();
 
-Send /start command to play again").Wait();
+        botClient.SendTextMessageAsync(chatId: context.ChatId,
+                                        parseMode: ParseMode.MarkdownV2,
+                                        text:"Send /newgame command to play again").Wait();
         return BehaviourStatus.Succeeded;
     }
 

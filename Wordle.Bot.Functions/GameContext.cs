@@ -12,7 +12,8 @@ public class GameContext
     public string Message { get; set; }
     public string CurrentCommand { get; set; }
     public Game Game { get; set; }
+    public string PlayerName { get; set; }
 
     //Services
-    public TelegramBotClient BotClient { get; set; }    
+    public TelegramBotClient BotClient { get; set; }
 }
