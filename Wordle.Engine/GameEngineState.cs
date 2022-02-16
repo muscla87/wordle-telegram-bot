@@ -15,6 +15,8 @@ namespace Wordle.Engine
         public List<string> Attempts { get; set; } = new List<string>();
         public List<PositionMatchMask[]> AttemptsMask { get; set; } = new List<PositionMatchMask[]>();
         public bool IsWordGuessed { get; set; }
+        public int WordLength { get; set; } = 5;
+        public int MaxAttempts { get; set; } = 6;
     }
 
     public enum PositionMatchMask

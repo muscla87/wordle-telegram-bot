@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using System.Text.Json;
+using Newtonsoft.Json;
 using WordleGame = Wordle.Engine.Game;
 using Wordle.Engine;
 using System.Text;
@@ -37,21 +37,34 @@ namespace Wordle.Bot.Functions
             log.LogInformation("C# HTTP triggfgfdgger function processed a request.");
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            Update update =  JsonSerializer.Deserialize<Update>(requestBody);
-
-            var gameContext = new GameContext()
+            Update update =  JsonConvert.DeserializeObject<Update>(requestBody);
+            if (update != null && update.Message != null)
             {
-                ChatId = update.Message.Chat.Id,
-                MessageId = update.Message.MessageId,
-                Message = update.Message.Text,
-                BotClient = _botClient,
-                Game = _game
-            };
+                var gameContext = new GameContext()
+                {
+                    ChatId = update.Message.Chat.Id,
+                    MessageId = update.Message.MessageId,
+                    Message = update.Message.Text,
+                    BotClient = _botClient,
+                    Game = _game
+                };
 
-            var behaviourStatus = _behaviour.Tick(gameContext);
-            while(behaviourStatus == BehaviourStatus.Running)
+                var behaviourStatus = _behaviour.Tick(gameContext);
+                while (behaviourStatus == BehaviourStatus.Running)
+                {
+                    behaviourStatus = _behaviour.Tick(gameContext);
+                }
+            }
+            else
             {
-                behaviourStatus = _behaviour.Tick(gameContext);
+                if(update == null)
+                {
+                    log.LogWarning("Update is null. {Payload}", requestBody);
+                }
+                else
+                {
+                    log.LogWarning("Message is null. {Payload}", requestBody);
+                }
             }
 
             return new OkResult();

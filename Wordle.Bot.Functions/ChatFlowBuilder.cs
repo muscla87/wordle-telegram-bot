@@ -25,7 +25,7 @@ public class ChatFlowBuilder
             .Sequence("Start")
                 .Condition("Is Start Command?", (context) => context.IsCommand("start"))
                 .Do("SetCurrentCommandContext(Start)", (context) => context.SetCurrentCommandContext("start"))
-                .Do("SendWelcomeMessage", (context) => context.SendWelcomeMessage())
+               // .Do("SendWelcomeMessage", (context) => context.SendWelcomeMessage())
                 .Do("SendInstructions", (context) => context.SendInstructions())
                 .AlwaysSucceed("Start New Game")
                     .Sequence("Start New Game")

@@ -1,7 +1,10 @@
 using System;
+using System.IO;
 using System.Text;
 using BehaviourTree;
 using Telegram.Bot;
+using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.InputFiles;
 using Wordle.Bot.Functions;
 using Wordle.Engine;
 
@@ -63,21 +66,17 @@ Each guess must be a valid five\-letter word\. Send a message with your word to 
 After each guess, the shape of the characters will change to show how close your guess was to the word\.
 Examples
 
-🅦ＥＡＲＬＹ 
-The letter *W* is in the word and in the correct spot\.
-
-Ｐ🄸ＬＬＳ
-The letter *I* is in the word but in the wrong spot\.
-
-🅢🅚Ｉ🅛🅛  
-The letter *I* is not in the word in any spot\.
-
 *Start typing your guess and send it to me\!*\.";
 
-        var botClient = context.BotClient;
-        botClient.SendTextMessageAsync(chatId: context.ChatId,
+        byte[] bytes = Convert.FromBase64String(Constants.Base64ExampleScreenshot);
+        using (MemoryStream ms = new MemoryStream(bytes))
+        {
+            var botClient = context.BotClient;
+            botClient.SendPhotoAsync(chatId: context.ChatId,
+                                        photo: new InputOnlineFile(ms),
                                         parseMode: Telegram.Bot.Types.Enums.ParseMode.MarkdownV2,
-                                        text: instructions).Wait();
+                                        caption: instructions).Wait();
+        }
         return BehaviourStatus.Succeeded;
     }
 
@@ -101,11 +100,25 @@ The letter *I* is not in the word in any spot\.
     {
         (var result, var newState) = context.Game.GameEngine.SubmitWord(context.Message).Result;
         if (result != Engine.WordValidationResult.Accepted)
-        {
+        {   
+            var errorMessage = $"🙇 Sorry, I can't accept this word";
+            switch(result) {
+                 case Engine.WordValidationResult.TooLong:
+                    errorMessage = $"🙇 Sorry, I can't accept this word because is too long";
+                    break;
+                case Engine.WordValidationResult.TooShort:
+                    errorMessage = $"🙇 Sorry, I can't accept this word because is too short";
+                    break;
+                case Engine.WordValidationResult.NotInDictionary:
+                    errorMessage = $"🙇 Sorry, this word is not in the game dictionary 📚 🤔";
+                    break;
+            }
+
             context.BotClient.SendTextMessageAsync(
             chatId: context.ChatId,
             replyToMessageId: context.MessageId,
-            text: $"Please provide a valid word. Reason: {result}");
+            parseMode: ParseMode.MarkdownV2,
+            text: errorMessage);
         }
 
         return result != Engine.WordValidationResult.Accepted ? BehaviourStatus.Failed : BehaviourStatus.Succeeded;
@@ -115,68 +128,15 @@ The letter *I* is not in the word in any spot\.
     {
         var botClient = context.BotClient;
         var state = context.Game.GameEngine.GetGameEngineState();
-        botClient.SendTextMessageAsync(chatId: context.ChatId,
-                                        parseMode: Telegram.Bot.Types.Enums.ParseMode.MarkdownV2,
-                                        text: RenderStatus(state)).Wait();
+        using (var gameOutputImageStream = new MemoryStream())
+        {
+            GameBoardRenderingService.RenderGameStateAsImage(state, gameOutputImageStream);
+            gameOutputImageStream.Position = 0;
+            botClient.SendPhotoAsync(chatId: context.ChatId,
+                                    photo: new Telegram.Bot.Types.InputFiles.InputOnlineFile(gameOutputImageStream)
+                                    ).Wait();
+        }
         return BehaviourStatus.Succeeded;
-
-        string RenderStatus(GameEngineState gameState) 
-        {
-            StringBuilder strBuilder = new StringBuilder();
-            strBuilder.Append("`");
-
-            for (int i = 0; i < gameState.Attempts.Count; i++)
-            {
-                // for (int c = 0; c < gameState.Attempts[0].Length; c++)
-                // {
-                //     // strBuilder.Append(" ");
-                //     // if(gameState.AttemptsMask[i][c] != PositionMatchMask.NotMatched)
-                //     // strBuilder.Append("*");
-                //     // strBuilder.Append("" + gameState.Attempts[i].ToUpperInvariant()[c] + "");
-                //     // if(gameState.AttemptsMask[i][c] != PositionMatchMask.NotMatched)
-                //     // strBuilder.Append("*");
-                //     strBuilder.Append(GetMatchSymbol(gameState.AttemptsMask[i][c]));
-                //     strBuilder.Append(" ");
-                    
-                // }
-
-                // strBuilder.AppendLine();
-
-                for (int c = 0; c < gameState.Attempts[0].Length; c++)
-                {
-                    //strBuilder.Append("" + GetMatchSymbol(gameState.AttemptsMask[i][c]) + "");
-                    strBuilder.Append(GetLetterSymbol(gameState.Attempts[i].ToUpperInvariant()[c], gameState.AttemptsMask[i][c]));
-                    strBuilder.Append(" ");
-                }
-                strBuilder.AppendLine();
-            }
-            strBuilder.Append("`");
-            return strBuilder.ToString();
-        }
-
-        Rune GetLetterSymbol(char letter, PositionMatchMask positionMatchMask)
-        {
-            int offset = letter - 'A';
-            return new Rune(0xFF21 + offset);
-            switch (positionMatchMask)
-            {
-                case PositionMatchMask.Matched: return new Rune(0xFF21 + offset);//filled circle
-                case PositionMatchMask.NotMatched: return new Rune(0x1F150 + offset);//full width
-                case PositionMatchMask.MatchInOtherPosition: return new Rune(0x1F130 + offset);//squared letter
-                default: return new Rune(' ');
-            }
-        }
-
-        string GetMatchSymbol(PositionMatchMask positionMatchMask)
-        {
-            switch (positionMatchMask)
-            {
-                case PositionMatchMask.NotMatched: return "⬜";
-                case PositionMatchMask.Matched: return "🟩";
-                case PositionMatchMask.MatchInOtherPosition: return "🟨";
-                default: return string.Empty;
-            }
-        }
     }
 
     public static BehaviourStatus SendEndOfGameMessage(this GameContext context)
@@ -184,7 +144,10 @@ The letter *I* is not in the word in any spot\.
         var botClient = context.BotClient;
         var wordToGuess = context.Game.GameEngine.GetGameEngineState().WordToGuess;
         botClient.SendTextMessageAsync(chatId: context.ChatId,
-                                        text: $"End of Game. Word: {wordToGuess}").Wait();
+                                        parseMode: ParseMode.MarkdownV2,
+                                        text: @$"The word to guess was *{wordToGuess}*
+
+Send /start command to play again").Wait();
         return BehaviourStatus.Succeeded;
     }
 
