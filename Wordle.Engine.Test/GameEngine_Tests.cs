@@ -4,7 +4,7 @@ using System.Linq;
 using Moq;
 using System.Threading.Tasks;
 
-namespace Wordle.Test;
+namespace Wordle.Engine.Test;
 
 public class GameEngine_Setup_Tests
 {
@@ -47,7 +47,7 @@ public class GameEngine_Setup_Tests
     public async void SubmitNotInDictionary5CharsWord_Expects_NotInDictionary()
     {
         string wordToSubmit = "aaaaa";
-        wordsDictionary.Setup(x => x.IsWordValid(wordToSubmit))
+        wordsDictionary.Setup(x => x.IsWordValid(wordToSubmit, It.IsAny<string>()))
                             .Returns(Task.FromResult(false));
         var gameEngine = new GameEngine(wordsDictionary.Object);
         (var wordEvaluationResult, var newGameState) = await gameEngine.SubmitWord(wordToSubmit);
@@ -58,9 +58,9 @@ public class GameEngine_Setup_Tests
     public async void SubmitInDictionary5CharsWord_Expects_Accepted()
     {
         string wordToSubmit = "aaaaa";
-        wordsDictionary.Setup(x => x.IsWordValid(wordToSubmit))
+        wordsDictionary.Setup(x => x.IsWordValid(wordToSubmit, It.IsAny<string>()))
                             .Returns(Task.FromResult(true));
-        wordsDictionary.Setup(x => x.PickWordToGuess())
+        wordsDictionary.Setup(x => x.PickWordToGuess(It.IsAny<string>()))
                             .Returns(Task.FromResult(wordToSubmit));
         var gameEngine = new GameEngine(wordsDictionary.Object);
         (var wordEvaluationResult, var newGameState) = await gameEngine.SubmitWord(wordToSubmit);
@@ -71,9 +71,9 @@ public class GameEngine_Setup_Tests
     public async void SubmitMatchingWord_Expects_GameEnd()
     {
         string wordToSubmit = "aaaaa";
-        wordsDictionary.Setup(x => x.IsWordValid(wordToSubmit))
+        wordsDictionary.Setup(x => x.IsWordValid(wordToSubmit, It.IsAny<string>()))
                             .Returns(Task.FromResult(true));
-        wordsDictionary.Setup(x => x.PickWordToGuess())
+        wordsDictionary.Setup(x => x.PickWordToGuess(It.IsAny<string>()))
                             .Returns(Task.FromResult(wordToSubmit));
         var gameEngine = new GameEngine(wordsDictionary.Object);
         (var wordEvaluationResult, var newGameState) = await gameEngine.SubmitWord(wordToSubmit);
@@ -87,9 +87,9 @@ public class GameEngine_Setup_Tests
     {
         string wordToSubmit = "aaaaa";
         string wordToMatch = "bbbbb";
-        wordsDictionary.Setup(x => x.IsWordValid(wordToSubmit))
+        wordsDictionary.Setup(x => x.IsWordValid(wordToSubmit, It.IsAny<string>()))
                             .Returns(Task.FromResult(true));
-        wordsDictionary.Setup(x => x.PickWordToGuess())
+        wordsDictionary.Setup(x => x.PickWordToGuess(It.IsAny<string>()))
                             .Returns(Task.FromResult(wordToMatch));
         var gameEngine = new GameEngine(wordsDictionary.Object);
         (var wordEvaluationResult, var newGameState) = await gameEngine.SubmitWord(wordToSubmit);
@@ -102,9 +102,9 @@ public class GameEngine_Setup_Tests
     {
         string wordToSubmit = "abcde";
         string wordToMatch = "ecdba";
-        wordsDictionary.Setup(x => x.IsWordValid(wordToSubmit))
+        wordsDictionary.Setup(x => x.IsWordValid(wordToSubmit, It.IsAny<string>()))
                             .Returns(Task.FromResult(true));
-        wordsDictionary.Setup(x => x.PickWordToGuess())
+        wordsDictionary.Setup(x => x.PickWordToGuess(It.IsAny<string>()))
                             .Returns(Task.FromResult(wordToMatch));
         var gameEngine = new GameEngine(wordsDictionary.Object);
         (var wordEvaluationResult, var newGameState) = await gameEngine.SubmitWord(wordToSubmit);
@@ -117,9 +117,9 @@ public class GameEngine_Setup_Tests
     {
         string wordToSubmit = "aaaaa";
         string wordToMatch = "bbbbb";
-        wordsDictionary.Setup(x => x.IsWordValid(wordToSubmit))
+        wordsDictionary.Setup(x => x.IsWordValid(wordToSubmit, It.IsAny<string>()))
                             .Returns(Task.FromResult(true));
-        wordsDictionary.Setup(x => x.PickWordToGuess())
+        wordsDictionary.Setup(x => x.PickWordToGuess(It.IsAny<string>()))
                             .Returns(Task.FromResult(wordToMatch));
         var gameEngine = new GameEngine(wordsDictionary.Object);
         for (int i = 0; i < 5; i++)
@@ -135,9 +135,9 @@ public class GameEngine_Setup_Tests
     {
         string wordToSubmit = "aaaaa";
         string wordToMatch = "bbbbb";
-        wordsDictionary.Setup(x => x.IsWordValid(wordToSubmit))
+        wordsDictionary.Setup(x => x.IsWordValid(wordToSubmit, It.IsAny<string>()))
                             .Returns(Task.FromResult(true));
-        wordsDictionary.Setup(x => x.PickWordToGuess())
+        wordsDictionary.Setup(x => x.PickWordToGuess(It.IsAny<string>()))
                             .Returns(Task.FromResult(wordToMatch));
         var gameEngine = new GameEngine(wordsDictionary.Object);
 
@@ -156,9 +156,9 @@ public class GameEngine_Setup_Tests
     {
         string wordToSubmit = "aaaaa";
         string wordToMatch = "bbbbb";
-        wordsDictionary.Setup(x => x.IsWordValid(wordToSubmit))
+        wordsDictionary.Setup(x => x.IsWordValid(wordToSubmit, It.IsAny<string>()))
                             .Returns(Task.FromResult(true));
-        wordsDictionary.Setup(x => x.PickWordToGuess())
+        wordsDictionary.Setup(x => x.PickWordToGuess(It.IsAny<string>()))
                             .Returns(Task.FromResult(wordToMatch));
         var gameEngine = new GameEngine(wordsDictionary.Object);
         var maxAttempts = gameEngine.GetGameEngineState().MaxAttempts;
@@ -181,9 +181,9 @@ public class GameEngine_Setup_Tests
     {
         string wordToSubmit = "knock";
         string wordToMatch = "think";
-        wordsDictionary.Setup(x => x.IsWordValid(wordToSubmit))
+        wordsDictionary.Setup(x => x.IsWordValid(wordToSubmit, It.IsAny<string>()))
                             .Returns(Task.FromResult(true));
-        wordsDictionary.Setup(x => x.PickWordToGuess())
+        wordsDictionary.Setup(x => x.PickWordToGuess(It.IsAny<string>()))
                             .Returns(Task.FromResult(wordToMatch));
         var gameEngine = new GameEngine(wordsDictionary.Object);
         (_, var newGameState) = await gameEngine.SubmitWord(wordToSubmit);
@@ -203,9 +203,9 @@ public class GameEngine_Setup_Tests
     {
         string wordToSubmit = "laaal";
         string wordToMatch = "skill";
-        wordsDictionary.Setup(x => x.IsWordValid(wordToSubmit))
+        wordsDictionary.Setup(x => x.IsWordValid(wordToSubmit, It.IsAny<string>()))
                             .Returns(Task.FromResult(true));
-        wordsDictionary.Setup(x => x.PickWordToGuess())
+        wordsDictionary.Setup(x => x.PickWordToGuess(It.IsAny<string>()))
                             .Returns(Task.FromResult(wordToMatch));
         var gameEngine = new GameEngine(wordsDictionary.Object);
         (_, var newGameState) = await gameEngine.SubmitWord(wordToSubmit);
@@ -225,9 +225,9 @@ public class GameEngine_Setup_Tests
     {
         string wordToSubmit = "llbbb";
         string wordToMatch = "aaaal";
-        wordsDictionary.Setup(x => x.IsWordValid(wordToSubmit))
+        wordsDictionary.Setup(x => x.IsWordValid(wordToSubmit, It.IsAny<string>()))
                             .Returns(Task.FromResult(true));
-        wordsDictionary.Setup(x => x.PickWordToGuess())
+        wordsDictionary.Setup(x => x.PickWordToGuess(It.IsAny<string>()))
                             .Returns(Task.FromResult(wordToMatch));
         var gameEngine = new GameEngine(wordsDictionary.Object);
         (_, var newGameState) = await gameEngine.SubmitWord(wordToSubmit);

@@ -1,4 +1,5 @@
 using System;
+using Wordle.Engine.Dictionaries;
 
 namespace Wordle.Engine
 {
@@ -13,6 +14,8 @@ namespace Wordle.Engine
         private bool IsWordGuessed { get; set; }
         private int WordLength { get; set; } = 5;
         private int MaxAttempts { get; set; } = 6;
+        private string DictionaryName { get; set; } = EnglishWordleOriginal.Instance.Name;
+
 
         public GameEngine(IWordsDictionaryService wordDictionaryService)
         {
@@ -23,7 +26,7 @@ namespace Wordle.Engine
         {
             if(CurrentPhase == GamePhase.Start)
             {
-                WordToGuess = await wordDictionaryService.PickWordToGuess();
+                WordToGuess = await wordDictionaryService.PickWordToGuess(DictionaryName);
                 CurrentPhase = GamePhase.InProgress;
             }
 
@@ -103,7 +106,7 @@ namespace Wordle.Engine
             }
             else
             {
-                bool isWordInDictionary = await wordDictionaryService.IsWordValid(word);
+                bool isWordInDictionary = await wordDictionaryService.IsWordValid(word, DictionaryName);
                 if(!isWordInDictionary)
                 {
                 return WordValidationResult.NotInDictionary;
@@ -126,15 +129,18 @@ namespace Wordle.Engine
             this.WordToGuess = gameState.WordToGuess;
             this.WordLength = gameState.WordLength;
             this.MaxAttempts = gameState.MaxAttempts;
+            this.DictionaryName = gameState.DictionaryName;
         }
 
         public async Task<bool> ValidateGameState(GameEngineState gameState)
         {
-            if(gameState.WordToGuess.Length != gameState.WordLength)
-                throw new InvalidOperationException($"WordToGuess length must be {gameState.WordLength}");
-            if(!await wordDictionaryService.IsWordValid(gameState.WordToGuess))
-                throw new InvalidOperationException("WordToGuess is not within the valid words list");
-
+            if (CurrentPhase != GamePhase.Start)
+            {
+                if (gameState.WordToGuess.Length != gameState.WordLength)
+                    throw new InvalidOperationException($"WordToGuess length must be {gameState.WordLength} if game is started");
+                if (!await wordDictionaryService.IsWordValid(gameState.WordToGuess, DictionaryName))
+                    throw new InvalidOperationException("WordToGuess is not within the valid words list");
+            }
             return true;
         }
 
