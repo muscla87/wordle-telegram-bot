@@ -14,7 +14,7 @@ namespace Wordle.Engine
             GameEngine = new GameEngine(wordsDictionaryService);
         }
 
-        public async Task SaveInitialPlayerInformation(long chatId, string fullName, string userName)
+        public async Task SaveInitialPlayerInformation(long chatId, string firstName, string lastName, string userName)
         {
             var gameState = (await _gameStateRepository.GetAsync(x => x.Id == chatId.ToString())).FirstOrDefault();
             if (gameState == null)
@@ -22,14 +22,16 @@ namespace Wordle.Engine
                 gameState = new GameState()
                 {
                     Id = chatId.ToString(),
-                    FullName = fullName,
+                    FirstName = firstName,
+                    LastName = lastName,
                     UserName = userName
                 };
                 await _gameStateRepository.CreateAsync(gameState);
             }
             else
             {
-                gameState.FullName = fullName;
+                gameState.FirstName = firstName;
+                gameState.LastName = lastName;
                 gameState.UserName = userName;
                 await _gameStateRepository.UpdateAsync(gameState);
             }
@@ -43,13 +45,13 @@ namespace Wordle.Engine
                 gameState = new GameState()
                 {
                     Id = chatId.ToString(),
-                    CurrentDictionary = dictionaryName
+                    CurrentDictionaryName = dictionaryName
                 };
                 await _gameStateRepository.CreateAsync(gameState);
             }
             else
             {
-                gameState.CurrentDictionary = dictionaryName;
+                gameState.CurrentDictionaryName = dictionaryName;
                 await _gameStateRepository.UpdateAsync(gameState);
             }
         }
@@ -60,7 +62,7 @@ namespace Wordle.Engine
             var gameEngineState = gameState?.CurrentGameState;
             if (gameEngineState == null)
             {
-                var newGameDictionaryName = gameState?.CurrentDictionary;
+                var newGameDictionaryName = gameState?.CurrentDictionaryName;
                 if(string.IsNullOrEmpty(newGameDictionaryName))
                     newGameDictionaryName = EnglishWordleOriginal.Instance.Name;
                 gameEngineState = new GameEngineState(newGameDictionaryName);
@@ -79,18 +81,22 @@ namespace Wordle.Engine
             }
             var gameEngineState = GameEngine.GetGameEngineState();
             gameState.CurrentGameState = gameEngineState;
-            if(exists)
+            if (exists)
+            {
+                //if new state phase is "End" and previous phase was "Progress", save game stats
                 await _gameStateRepository.UpdateAsync(gameState);
+            }
             else
                 await _gameStateRepository.CreateAsync(gameState);
         }
 
-        public async Task DeleteGameStateAsync(long chatId)
+        public async Task StartNewGameAsync(long chatId)
         {
             var gameState = (await _gameStateRepository.GetAsync(x => x.Id == chatId.ToString())).FirstOrDefault();
             if (gameState != null)
             {
-                await _gameStateRepository.DeleteAsync(gameState);
+                gameState.CurrentGameState = null;
+                await _gameStateRepository.UpdateAsync(gameState);
             }
         }
     }

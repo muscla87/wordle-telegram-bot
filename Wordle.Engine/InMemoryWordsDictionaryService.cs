@@ -10,7 +10,7 @@ namespace Wordle.Engine
         {
             foreach (var dictionary in WordsDictionaries.All)
             {
-                var hashSet = new HashSet<string>(dictionary.Words.Concat(dictionary.OtherWords));
+                var hashSet = new HashSet<string>(dictionary.Words.Concat(dictionary.OtherWords), StringComparer.OrdinalIgnoreCase);
                 dictionaries.Add(dictionary.Name.ToLowerInvariant(), (dictionary.Words, hashSet));
             }
         }

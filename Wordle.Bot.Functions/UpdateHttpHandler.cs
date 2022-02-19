@@ -44,9 +44,11 @@ namespace Wordle.Bot.Functions
                 {
                     ChatId = update.Message.Chat.Id,
                     MessageId = update.Message.MessageId,
-                    Message = update.Message.Text,
+                    Message = SanitizeInput(update.Message.Text), 
                     BotClient = _botClient,
-                    PlayerName = update.Message.From?.FirstName ?? update.Message.From?.Username ?? "Player",
+                    PlayerFirstName = update.Message.From?.FirstName ?? update.Message.From?.Username ?? "Player",
+                    PlayerLastName = update.Message.From?.LastName ?? string.Empty,
+                    PlayerUserName = update.Message.From?.Username ?? string.Empty,
                     Game = _game
                 };
 
@@ -69,6 +71,14 @@ namespace Wordle.Bot.Functions
             }
 
             return new OkResult();
+        }
+        
+        private static string SanitizeInput(string messageText)
+        {
+            //TODO: evaluate if we can be target of injection or any kind of attack from user input
+            messageText = messageText?.Trim() ?? string.Empty;
+            int length = messageText.Length;
+            return messageText.Substring(0, Math.Min(length, 100));
         }
     }
 }

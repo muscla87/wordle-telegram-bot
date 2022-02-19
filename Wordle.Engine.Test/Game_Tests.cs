@@ -69,7 +69,8 @@ public class Game_Tests
                         Enumerable.Range(1,5).Select(x => PositionMatchMask.NotMatched).ToArray(),
                     },
                     IsWordGuessed = false,
-                    WordToGuess = "zzzzz"
+                    WordToGuess = "zzzzz",
+                    DictionaryName = "Italian"
             }
         };
         gameStateRepoMock.Setup(x => x.GetAsync(x => x.Id == chatId.ToString(), default(CancellationToken)))
@@ -86,6 +87,7 @@ public class Game_Tests
         Assert.Equal(gameState.CurrentGameState.AttemptsMask, gameEngineState.AttemptsMask);
         Assert.Equal(gameState.CurrentGameState.IsWordGuessed, gameEngineState.IsWordGuessed);
         Assert.Equal(gameState.CurrentGameState.WordToGuess, gameEngineState.WordToGuess);
+        Assert.Equal(gameState.CurrentGameState.DictionaryName, gameEngineState.DictionaryName);
     }
 
     [Fact]

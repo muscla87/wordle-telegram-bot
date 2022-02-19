@@ -10,7 +10,7 @@ public class Italian : IWordsDictionary
     private readonly static IWordsDictionary _instance = new Italian();
     public static IWordsDictionary Instance => _instance;
     public string[] Words => words;
-    public string[] OtherWords => words;
+    public string[] OtherWords => new string[0];
     public string DefinitionWebSiteUrlFormat => "https://www.google.com/search?q={0}+definizione";
     public string Name => nameof(Italian);
     public string DisplayName => nameof(Italian);
@@ -1041,7 +1041,6 @@ public class Italian : IWordsDictionary
     "BRAVE",
     "BRAVI",
     "BRAVO",
-    "BREAK",
     "BRENT",
     "BREVA",
     "BREVE",

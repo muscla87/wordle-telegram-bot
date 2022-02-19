@@ -26,13 +26,22 @@ public class InMemoryWordsDictionaryService_Tests
     [MemberData(nameof(AllDictionaries))]
     public async Task ExistingDictionary_AllWordsValid(IWordsDictionary dictionary)
     {
-        foreach(var englishWord in dictionary.Words)
+        foreach(var word in dictionary.Words)
         {
-            Assert.True(await dictionaryService.IsWordValid(englishWord, dictionary.Name));
+            var result = await dictionaryService.IsWordValid(word, dictionary.Name);
+            if(!result)
+            {
+                throw new Exception($"Word {word} is not valid in dictionary {dictionary.Name}");
+            }
+            Assert.True(result);
         }
-        foreach(var englishWord in dictionary.OtherWords)
+        foreach(var word in dictionary.OtherWords)
         {
-            Assert.True(await dictionaryService.IsWordValid(englishWord, dictionary.Name));
+            var result = await dictionaryService.IsWordValid(word, dictionary.Name);
+            if(!result)
+            {
+                throw new Exception($"Word {word} is not valid in dictionary {dictionary.Name}");
+            }
         }
     }
 

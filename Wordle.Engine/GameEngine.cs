@@ -54,7 +54,7 @@ namespace Wordle.Engine
         {
             const char replacementChar = '*';
             var positionMatch = new PositionMatchMask[this.WordLength];
-            var tmpWordToGuess = WordToGuess;
+            var tmpWordToGuess = WordToGuess.ToLowerInvariant();
             for (int i = 0; i < word.Length; i++)
             {
                 if (word[i] == tmpWordToGuess[i])
@@ -154,7 +154,8 @@ namespace Wordle.Engine
                 IsWordGuessed = this.IsWordGuessed,
                 WordToGuess = this.WordToGuess ?? string.Empty,
                 WordLength = this.WordLength,
-                MaxAttempts = this.MaxAttempts
+                MaxAttempts = this.MaxAttempts,
+                DictionaryName = this.DictionaryName
             };
         } 
        

@@ -6,8 +6,9 @@ namespace Wordle.Engine
     public class GameState : Item
     {
         public GameEngineState? CurrentGameState { get; set; }
-        public string CurrentDictionary { get; set; } = EnglishWordleOriginal.Instance.Name;
-        public string FullName { get; set; } = string.Empty;
+        public string CurrentDictionaryName { get; set; } = EnglishWordleOriginal.Instance.Name;
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
         public string UserName { get; set; } = string.Empty;
     }
 }
