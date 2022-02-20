@@ -5,6 +5,7 @@ using Microsoft.Azure.CosmosRepository;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Linq;
+using System;
 
 namespace Wordle.Engine.Test;
 
@@ -60,7 +61,7 @@ public class Game_Tests
 
         GameState gameState = new GameState()
         {
-            GameEngineState = new GameEngineState()
+            CurrentGameState = new GameEngineState()
                 {
                     CurrentPhase = GamePhase.InProgress,
                     Attempts =  new List<string>() { "toll", "skip" },
@@ -69,23 +70,25 @@ public class Game_Tests
                         Enumerable.Range(1,5).Select(x => PositionMatchMask.NotMatched).ToArray(),
                     },
                     IsWordGuessed = false,
-                    WordToGuess = "zzzzz"
+                    WordToGuess = "zzzzz",
+                    DictionaryName = "Italian"
             }
         };
         gameStateRepoMock.Setup(x => x.GetAsync(x => x.Id == chatId.ToString(), default(CancellationToken)))
                             .Returns(ValueTask.FromResult<IEnumerable<GameState>>(new [] { gameState }));
-        wordsDictionary.Setup(x => x.IsWordValid(gameState.GameEngineState.WordToGuess))
+        wordsDictionary.Setup(x => x.IsWordValid(gameState.CurrentGameState.WordToGuess, It.IsAny<string>()))
                                 .Returns(Task.FromResult(true));
         await game.LoadGameStateAsync(chatId);
         gameStateRepoMock.Verify(x => x.GetAsync(x => x.Id == chatId.ToString(), default(CancellationToken)));
 
         var gameEngineState = game.GameEngine.GetGameEngineState();
 
-        Assert.Equal(gameState.GameEngineState.CurrentPhase, gameEngineState.CurrentPhase);
-        Assert.Equal(gameState.GameEngineState.Attempts, gameEngineState.Attempts);
-        Assert.Equal(gameState.GameEngineState.AttemptsMask, gameEngineState.AttemptsMask);
-        Assert.Equal(gameState.GameEngineState.IsWordGuessed, gameEngineState.IsWordGuessed);
-        Assert.Equal(gameState.GameEngineState.WordToGuess, gameEngineState.WordToGuess);
+        Assert.Equal(gameState.CurrentGameState.CurrentPhase, gameEngineState.CurrentPhase);
+        Assert.Equal(gameState.CurrentGameState.Attempts, gameEngineState.Attempts);
+        Assert.Equal(gameState.CurrentGameState.AttemptsMask, gameEngineState.AttemptsMask);
+        Assert.Equal(gameState.CurrentGameState.IsWordGuessed, gameEngineState.IsWordGuessed);
+        Assert.Equal(gameState.CurrentGameState.WordToGuess, gameEngineState.WordToGuess);
+        Assert.Equal(gameState.CurrentGameState.DictionaryName, gameEngineState.DictionaryName);
     }
 
     [Fact]
@@ -125,4 +128,9 @@ public class Game_Tests
         gameStateRepoMock.Verify(x => x.CreateAsync(It.IsAny<GameState>(), default(CancellationToken)));
     }
 
+    [Fact]
+    public async Task SaveDictionary_WithNonValidDictionaryName_ThrowsArgumentException()
+    {
+        await Assert.ThrowsAsync<ArgumentException>(async () => await game.SaveDictionaryName(0, "MISSING"));
+    }
 }

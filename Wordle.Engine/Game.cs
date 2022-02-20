@@ -1,4 +1,5 @@
 using Microsoft.Azure.CosmosRepository;
+using Wordle.Engine.Dictionaries;
 
 namespace Wordle.Engine
 {
@@ -13,13 +14,65 @@ namespace Wordle.Engine
             GameEngine = new GameEngine(wordsDictionaryService);
         }
 
+        public async Task SaveInitialPlayerInformation(long chatId, string firstName, string lastName, string userName)
+        {
+            var gameState = (await _gameStateRepository.GetAsync(x => x.Id == chatId.ToString())).FirstOrDefault();
+            if (gameState == null)
+            {
+                gameState = new GameState()
+                {
+                    Id = chatId.ToString(),
+                    FirstName = firstName,
+                    LastName = lastName,
+                    UserName = userName
+                };
+                await _gameStateRepository.CreateAsync(gameState);
+            }
+            else
+            {
+                gameState.FirstName = firstName;
+                gameState.LastName = lastName;
+                gameState.UserName = userName;
+                await _gameStateRepository.UpdateAsync(gameState);
+            }
+        }
+
+        public async Task SaveDictionaryName(long chatId, string dictionaryName)
+        {
+            if(!WordsDictionaries.All.Any(x => x.Name == dictionaryName))
+            {
+                throw new ArgumentException($"Dictionary {dictionaryName} does not exist");
+            }
+
+            var gameState = (await _gameStateRepository.GetAsync(x => x.Id == chatId.ToString())).FirstOrDefault();
+            if (gameState == null)
+            {
+                gameState = new GameState()
+                {
+                    Id = chatId.ToString(),
+                    CurrentDictionaryName = dictionaryName
+                };
+                await _gameStateRepository.CreateAsync(gameState);
+            }
+            else
+            {
+                gameState.CurrentDictionaryName = dictionaryName;
+                await _gameStateRepository.UpdateAsync(gameState);
+            }
+        }
+
         public async Task LoadGameStateAsync(long chatId)
         {
             var gameState = (await _gameStateRepository.GetAsync(x => x.Id == chatId.ToString())).FirstOrDefault();
-            if (gameState?.GameEngineState != null)
+            var gameEngineState = gameState?.CurrentGameState;
+            if (gameEngineState == null)
             {
-                await GameEngine.InitializeGameState(gameState.GameEngineState);
+                var newGameDictionaryName = gameState?.CurrentDictionaryName;
+                if(string.IsNullOrEmpty(newGameDictionaryName))
+                    newGameDictionaryName = EnglishWordleOriginal.Instance.Name;
+                gameEngineState = new GameEngineState(newGameDictionaryName);
             }
+            await GameEngine.InitializeGameState(gameEngineState);
         }   
 
         public async Task SaveGameStateAsync(long chatId)
@@ -32,19 +85,23 @@ namespace Wordle.Engine
                 exists = false;
             }
             var gameEngineState = GameEngine.GetGameEngineState();
-            gameState.GameEngineState = gameEngineState;
-            if(exists)
+            gameState.CurrentGameState = gameEngineState;
+            if (exists)
+            {
+                //if new state phase is "End" and previous phase was "Progress", save game stats
                 await _gameStateRepository.UpdateAsync(gameState);
+            }
             else
                 await _gameStateRepository.CreateAsync(gameState);
         }
 
-        public async Task DeleteGameStateAsync(long chatId)
+        public async Task StartNewGameAsync(long chatId)
         {
             var gameState = (await _gameStateRepository.GetAsync(x => x.Id == chatId.ToString())).FirstOrDefault();
             if (gameState != null)
             {
-                await _gameStateRepository.DeleteAsync(gameState);
+                gameState.CurrentGameState = null;
+                await _gameStateRepository.UpdateAsync(gameState);
             }
         }
     }

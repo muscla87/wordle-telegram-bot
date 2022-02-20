@@ -15,8 +15,8 @@ public class ChatFlowBuilder
                     .Subtree(ShowGameBoardBehaviour())
                     .Subtree(HelpBehaviour())
                     .Subtree(StatisticsBehaviour())
+                    .Subtree(ChangeDictionaryBehaviour())
                     .Subtree(GameBehaviour())
-                    .Subtree(ResetBehaviour())
                 .End()
                 .Build();
     }
@@ -26,9 +26,8 @@ public class ChatFlowBuilder
         return FluentBuilder.Create<GameContext>()
             .Sequence("Start")
                 .Condition("Is Start Command?", (context) => context.IsCommand("start"))
-                .Do("SetCurrentCommandContext(Start)", (context) => context.SetCurrentCommandContext("start"))
                 .Do("SendWelcomeMessage", (context) => context.SendWelcomeMessage())
-                .Do("SetCurrentCommandContext(Null)", (context) => context.SetCurrentCommandContext(null))
+                .Do("SaveInitialPlayerInformation", (context) => context.SaveInitialPlayerInformation())
             .End()
             .Build();
     }
@@ -38,7 +37,6 @@ public class ChatFlowBuilder
         return FluentBuilder.Create<GameContext>()
             .Sequence("NewGame")
                 .Condition("Is NewGame Command?", (context) => context.IsCommand("newgame"))
-                .Do("SetCurrentCommandContext(NewGame)", (context) => context.SetCurrentCommandContext("newgame"))
                 .AlwaysSucceed("Start New Game")
                     .Selector("StartOrResume")
                         .Sequence("Start New Game")
@@ -55,7 +53,6 @@ public class ChatFlowBuilder
                         .End()
                     .End()
                 .End()
-                .Do("SetCurrentCommandContext(Null)", (context) => context.SetCurrentCommandContext(null))
             .End()
             .Build();
     }
@@ -65,10 +62,8 @@ public class ChatFlowBuilder
         return FluentBuilder.Create<GameContext>()
             .Sequence("ShowGameBoard")
                 .Condition("Is ShowGameBoard Command?", (context) => context.IsCommand("showboard"))
-                .Do("SetCurrentCommandContext(ShowGameBoard)", (context) => context.SetCurrentCommandContext("showboard"))
                 .Do("Load Game", (context) => context.LoadGame())
                 .Do("SendGameStatus", (context) => context.SendGameSummary())
-                .Do("SetCurrentCommandContext(Null)", (context) => context.SetCurrentCommandContext(null))
             .End()
             .Build();
     }
@@ -78,9 +73,7 @@ public class ChatFlowBuilder
         return FluentBuilder.Create<GameContext>()
             .Sequence("Help")
                 .Condition("Is Help Command?", (context) => context.IsCommand("help"))
-                .Do("SetCurrentCommandContext(Help)", (context) => context.SetCurrentCommandContext("help"))
                 .Do("SendInstructions", (context) => context.SendInstructions())
-                .Do("SetCurrentCommandContext(Null)", (context) => context.SetCurrentCommandContext(null))
             .End()
             .Build();
     }
@@ -90,9 +83,7 @@ public class ChatFlowBuilder
         return FluentBuilder.Create<GameContext>()
             .Sequence("Statistics")
                 .Condition("Is Statistics Command?", (context) => context.IsCommand("stats"))
-                .Do("SetCurrentCommandContext(Statistics)", (context) => context.SetCurrentCommandContext("stats"))
                 .Do("SendStatistics", (context) =>  context.SendStatistics())
-                .Do("SetCurrentCommandContext(Null)", (context) => context.SetCurrentCommandContext(null))
             .End()
             .Build();
     }
@@ -101,7 +92,6 @@ public class ChatFlowBuilder
     {
         return FluentBuilder.Create<GameContext>()
             .Sequence("Game")
-                .Condition("Is Command Context = NULL?", (context) => context.CurrentCommand == null)
                 .Do("Load Game", (context) => context.LoadGame())
                 .AlwaysSucceed("GameProgress")
                     .Sequence("GameProgress")
@@ -123,19 +113,15 @@ public class ChatFlowBuilder
             .Build();
     }
 
-    private IBehaviour<GameContext> ResetBehaviour()
+    private IBehaviour<GameContext> ChangeDictionaryBehaviour()
     {
         return FluentBuilder.Create<GameContext>()
-            .Sequence("Reset")
-                .Selector("CheckCommandOrContext")
-                    .Sequence("Ask For Confirmation")
-                        .Condition("Is Reset Command?", (context) => context.IsCommand("reset"))
-                        .Do("SendResetConfirmation", (context) => context.SendResetConfirmationMessage())
-                    .End()
-                    .Condition("Is Command Context = Reset?", (context) => context.CurrentCommand == "reset")
-                .Do("SetCurrentCommandContext(Reset)", (context) => context.SetCurrentCommandContext("reset"))
-                .Condition("Wait for Confirmation", (context) => context.IsMessage("yes"))
-                .Do("ResetData", (context) => context.ResetGame())
+            .Sequence("ChangeDictionary")
+                .Condition("Is Change Dictionary Command?", (context) => context.IsCommand("changedictionary"))
+                .Selector("Apply New Dictionary or Send Buttons")
+                    .Do("SetDictionary", (context) => context.SetDictionary())
+                    .Do("Send change dictionary buttons", (context) => context.SendChangeDictionaryButtons())
+                .End()
             .End()
             .Build();
     }

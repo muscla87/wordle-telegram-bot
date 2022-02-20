@@ -1,13 +1,14 @@
 using Microsoft.Azure.CosmosRepository;
+using Wordle.Engine.Dictionaries;
 
 namespace Wordle.Engine
 {
     public class GameEngineState
     {
         public GameEngineState() { }
-        public GameEngineState(string wordToGuess)
+        public GameEngineState(string dictionaryName)
         {
-            WordToGuess = wordToGuess;
+            this.DictionaryName = dictionaryName;
         }
 
         public GamePhase CurrentPhase { get; set; }
@@ -17,6 +18,7 @@ namespace Wordle.Engine
         public bool IsWordGuessed { get; set; }
         public int WordLength { get; set; } = 5;
         public int MaxAttempts { get; set; } = 6;
+        public string DictionaryName { get; set; } = EnglishWordleOriginal.Instance.Name;
     }
 
     public enum PositionMatchMask

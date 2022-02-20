@@ -34,8 +34,6 @@ namespace Wordle.Bot.Functions
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("C# HTTP triggfgfdgger function processed a request.");
-
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             Update update =  JsonConvert.DeserializeObject<Update>(requestBody);
             if (update != null && update.Message != null)
@@ -44,16 +42,29 @@ namespace Wordle.Bot.Functions
                 {
                     ChatId = update.Message.Chat.Id,
                     MessageId = update.Message.MessageId,
-                    Message = update.Message.Text,
+                    Message = SanitizeInput(update.Message.Text), 
                     BotClient = _botClient,
-                    PlayerName = update.Message.From?.FirstName ?? update.Message.From?.Username ?? "Player",
+                    PlayerFirstName = update.Message.From?.FirstName ?? update.Message.From?.Username ?? "Player",
+                    PlayerLastName = update.Message.From?.LastName ?? string.Empty,
+                    PlayerUserName = update.Message.From?.Username ?? string.Empty,
                     Game = _game
                 };
+                
+                log.LogInformation("Received message from chat {ChatId} ", gameContext.ChatId);
 
-                var behaviourStatus = _behaviour.Tick(gameContext);
-                while (behaviourStatus == BehaviourStatus.Running)
+                try
                 {
-                    behaviourStatus = _behaviour.Tick(gameContext);
+                    var behaviourStatus = _behaviour.Tick(gameContext);
+                    while (behaviourStatus == BehaviourStatus.Running)
+                    {
+                        behaviourStatus = _behaviour.Tick(gameContext);
+                    }
+                }
+                catch(Exception ex)
+                {
+                    log.LogError(ex, "Error while processing message {Message} from chat {ChatId}", gameContext.Message, gameContext.ChatId);
+                    await _botClient.SendTextMessageAsync(gameContext.ChatId, "Sorry, something went wrong processing your message. 😥 Please try again later.");
+                    throw;
                 }
             }
             else
@@ -69,6 +80,14 @@ namespace Wordle.Bot.Functions
             }
 
             return new OkResult();
+        }
+        
+        private static string SanitizeInput(string messageText)
+        {
+            //TODO: evaluate if we can be target of injection or any kind of attack from user input
+            messageText = messageText?.Trim() ?? string.Empty;
+            int length = messageText.Length;
+            return messageText.Substring(0, Math.Min(length, 100));
         }
     }
 }
