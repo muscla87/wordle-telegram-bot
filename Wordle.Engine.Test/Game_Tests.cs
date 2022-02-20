@@ -5,6 +5,7 @@ using Microsoft.Azure.CosmosRepository;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Linq;
+using System;
 
 namespace Wordle.Engine.Test;
 
@@ -127,4 +128,9 @@ public class Game_Tests
         gameStateRepoMock.Verify(x => x.CreateAsync(It.IsAny<GameState>(), default(CancellationToken)));
     }
 
+    [Fact]
+    public async Task SaveDictionary_WithNonValidDictionaryName_ThrowsArgumentException()
+    {
+        await Assert.ThrowsAsync<ArgumentException>(async () => await game.SaveDictionaryName(0, "MISSING"));
+    }
 }

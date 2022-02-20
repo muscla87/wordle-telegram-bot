@@ -34,8 +34,6 @@ namespace Wordle.Bot.Functions
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("C# HTTP triggfgfdgger function processed a request.");
-
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             Update update =  JsonConvert.DeserializeObject<Update>(requestBody);
             if (update != null && update.Message != null)
@@ -51,11 +49,22 @@ namespace Wordle.Bot.Functions
                     PlayerUserName = update.Message.From?.Username ?? string.Empty,
                     Game = _game
                 };
+                
+                log.LogInformation("Received message from chat {ChatId} ", gameContext.ChatId);
 
-                var behaviourStatus = _behaviour.Tick(gameContext);
-                while (behaviourStatus == BehaviourStatus.Running)
+                try
                 {
-                    behaviourStatus = _behaviour.Tick(gameContext);
+                    var behaviourStatus = _behaviour.Tick(gameContext);
+                    while (behaviourStatus == BehaviourStatus.Running)
+                    {
+                        behaviourStatus = _behaviour.Tick(gameContext);
+                    }
+                }
+                catch(Exception ex)
+                {
+                    log.LogError(ex, "Error while processing message {Message} from chat {ChatId}", gameContext.Message, gameContext.ChatId);
+                    await _botClient.SendTextMessageAsync(gameContext.ChatId, "Sorry, something went wrong processing your message. 😥 Please try again later.");
+                    throw;
                 }
             }
             else

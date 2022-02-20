@@ -118,9 +118,9 @@ public class ChatFlowBuilder
         return FluentBuilder.Create<GameContext>()
             .Sequence("ChangeDictionary")
                 .Condition("Is Change Dictionary Command?", (context) => context.IsCommand("changedictionary"))
-                .Selector("Apply New Dictionary or Fail")
+                .Selector("Apply New Dictionary or Send Buttons")
                     .Do("SetDictionary", (context) => context.SetDictionary())
-                    .Do("Display wrong command", (context) => context.ResetGame())
+                    .Do("Send change dictionary buttons", (context) => context.SendChangeDictionaryButtons())
                 .End()
             .End()
             .Build();

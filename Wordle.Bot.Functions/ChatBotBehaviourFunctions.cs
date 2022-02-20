@@ -46,22 +46,29 @@ internal static class ChatBotBehaviourFunctions
     public static BehaviourStatus SetDictionary(this GameContext context)
     {
         var botClient = context.BotClient;
-        string dictionaryName = string.Empty;
-        try {
-            dictionaryName = context.Message.Split(' ')[1];
+        var messageParts = context.Message.Split(' ');
+        if (messageParts.Length == 2)
+        {
+            string dictionaryName = messageParts[1];
             context.Game.SaveDictionaryName(context.ChatId, dictionaryName).Wait();
+            botClient.SendTextMessageAsync(chatId: context.ChatId,
+                                            parseMode: ParseMode.MarkdownV2,
+                                            text: $"👍 I'll pick a word from the selected dictionary for the next game\\!",
+                                            replyMarkup: new ReplyKeyboardRemove()).Wait();
+            return BehaviourStatus.Succeeded;
         }
-        catch (Exception) {
-            var buttons = WordsDictionaries.All.Select(x => new KeyboardButton($"/changedictionary {x.Name}")).ToArray();
-            var rkm = new ReplyKeyboardMarkup(buttons);
-            botClient.SendTextMessageAsync(context.ChatId, "Text",replyMarkup: rkm).Wait();
+        else
+        {
             return BehaviourStatus.Failed;
         }
+    }
 
-        botClient.SendTextMessageAsync(chatId: context.ChatId,
-                                        parseMode: ParseMode.MarkdownV2,
-                                        text: $"👍 I'll pick a word from the selected dictionary for the next game\\!",
-                                        replyMarkup: new ReplyKeyboardRemove()).Wait();
+    public static BehaviourStatus SendChangeDictionaryButtons(this GameContext context)
+    {
+        var botClient = context.BotClient;
+         var buttons = WordsDictionaries.All.Select(x => new KeyboardButton($"/changedictionary {x.Name}")).ToArray();
+        var rkm = new ReplyKeyboardMarkup(buttons);
+        botClient.SendTextMessageAsync(context.ChatId, "Please select the dictionary you want to use.",replyMarkup: rkm).Wait();
         return BehaviourStatus.Succeeded;
     }
 
@@ -124,14 +131,6 @@ Examples
         return BehaviourStatus.Succeeded;
     }
 
-    public static BehaviourStatus ResetGame(this GameContext context)
-    {
-        var botClient = context.BotClient;
-        botClient.SendTextMessageAsync(chatId: context.ChatId,
-                                        text: $"Reset Game").Wait();
-        return BehaviourStatus.Succeeded;
-    }
-
     public static BehaviourStatus EvaluateWordInMessage(this GameContext context)
     {
         var word = context.Message;
@@ -186,7 +185,7 @@ Examples
         var botClient = context.BotClient;
         var gameState = context.Game.GameEngine.GetGameEngineState();
         var dictionaryUrlTemplate = WordsDictionaries.All.FirstOrDefault(x => x.Name == gameState.DictionaryName)?.DefinitionWebSiteUrlFormat;
-        var wordToGuess = $"*[{gameState.WordToGuess}]({string.Format(dictionaryUrlTemplate, gameState.WordToGuess)})*";
+        var wordToGuess = $"*[{gameState.WordToGuess}]({string.Format(dictionaryUrlTemplate, gameState.WordToGuess.ToLowerInvariant())})*";
         
         var resultMessage = gameState.IsWordGuessed ? $"🎉 Congratulations, you guessed the word {wordToGuess} in {gameState.Attempts.Count} guesses\\! 🎉" :
                                                       $"🙇 Sorry, you didn't guess the word {wordToGuess} 🙇";  

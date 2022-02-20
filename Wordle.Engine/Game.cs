@@ -39,6 +39,11 @@ namespace Wordle.Engine
 
         public async Task SaveDictionaryName(long chatId, string dictionaryName)
         {
+            if(!WordsDictionaries.All.Any(x => x.Name == dictionaryName))
+            {
+                throw new ArgumentException($"Dictionary {dictionaryName} does not exist");
+            }
+
             var gameState = (await _gameStateRepository.GetAsync(x => x.Id == chatId.ToString())).FirstOrDefault();
             if (gameState == null)
             {
