@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Microsoft ResX Schema
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
+    associated with the data types.
+
+    Example:
+
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+
+    There are any number of "resheader" rows that contain simple
+    name/value pairs.
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
+    mimetype set.
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
+    extensible. For a given mimetype the value must be set accordingly:
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
+    read any of the formats listed below.
+
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Welcome" xml:space="preserve">
+    <value>✨Ciao✨ *{0}*\! Sono felice di averti qui a giocare ❤️	Invia il comando /newgame per iniziare a giocare\!</value>
+    <comment />
+  </data>
+  <data name="DictionaryUpdateConfirmation" xml:space="preserve">
+    <value>👍 Nella prossima partita sceglierò una parola dal dizionario che hai selezionato\!</value>
+    <comment />
+  </data>
+  <data name="DictionaryUpdatePrompt" xml:space="preserve">
+    <value>Seleziona il dizionario con cui vuoi giocare.</value>
+    <comment />
+  </data>
+  <data name="GameInProgressError" xml:space="preserve">
+    <value>🎮 Non posso avviare una nuova partita se non concludi quella in corso 🕹</value>
+    <comment />
+  </data>
+  <data name="InstructionsCaption" xml:space="preserve">
+    <value>Indovina la PAROLA di 5 lettere in almeno sei tentativi\.	* Inizia a scrivere una parola in chat ed inviala\!*</value>
+    <comment />
+  </data>
+  <data name="WordTooLongError" xml:space="preserve">
+    <value>🙇 Mi dispiace, la parola inserita è *troppo lunga*</value>
+    <comment />
+  </data>
+  <data name="WordTooShortError" xml:space="preserve">
+    <value>🙇 Mi dispiace, la parola inserita è *troppo corta*</value>
+    <comment />
+  </data>
+  <data name="WordNotInDictionaryError" xml:space="preserve">
+    <value>🙇 Mi dispiace, la parola inserita *non è presente nel dizionario {0}* 📚 🤔</value>
+    <comment>0 - dictionary display name</comment>
+  </data>
+  <data name="EndOfGameGuessed" xml:space="preserve">
+    <value>🎉 Ben fatto, hai indovinato {0} in {1} tenativi\! 🎉</value>
+    <comment>0 - word+link 1 - number of guesses</comment>
+  </data>
+  <data name="EndOfGameNotGuessed" xml:space="preserve">
+    <value>🙇 Mi dispiace, non sei riuscito ad indovinare la parola {0} 🙇</value>
+    <comment>0 - word+link</comment>
+  </data>
+  <data name="SendNewGameToPlayAgain" xml:space="preserve">
+    <value>Invia il comando /newgame per giocare di nuovo</value>
+    <comment />
+  </data>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>Mi dispiace, qualcosa è andato storto durante l'elaborazione del messaggio. 😥 Riprova più tardi.</value>
+    <comment />
+  </data>
+  <data name="changedictionaryCommandDescription" xml:space="preserve">
+    <value>Scegli da quale dizionario saranno selezionate le parole da indovinare (Italiano, Inglese)</value>
+    <comment />
+  </data>
+  <data name="howtoplayCommandDescription" xml:space="preserve">
+    <value>Visualizza le regole di goico e le istruzioni per giocare</value>
+    <comment />
+  </data>
+  <data name="newgameCommandDescription" xml:space="preserve">
+    <value>Avvia una nuova partita se quella corrente è terminata</value>
+    <comment />
+  </data>
+  <data name="showboardCommandDescription" xml:space="preserve">
+    <value>Visualizza il tabellone di gioco</value>
+    <comment />
+  </data>
+  <data name="ItalianDictionaryName" xml:space="preserve">
+    <value>Italiano</value>
+    <comment />
+  </data>
+  <data name="EnglishWordleOriginalDictionaryName" xml:space="preserve">
+    <value>Inglese</value>
+    <comment />
+  </data>
+  <data name="helpCommandDescription" xml:space="preserve">
+    <value>Visualizza la lista dei comandi</value>
+  </data>
+</root>

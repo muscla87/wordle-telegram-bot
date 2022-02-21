@@ -12,6 +12,7 @@ namespace AzureFunctionTier
     {
         public override void Configure(IFunctionsHostBuilder builder)
         {
+            builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
             builder.Services.AddCosmosRepository(options =>
             {
                 options.ContainerPerItemType = true;
