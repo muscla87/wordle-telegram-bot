@@ -16,6 +16,7 @@ public class ChatFlowBuilder
                     .Subtree(HelpBehaviour())
                     .Subtree(StatisticsBehaviour())
                     .Subtree(ChangeDictionaryBehaviour())
+                    .Subtree(ShowCommands())
                     .Subtree(GameBehaviour())
                 .End()
                 .Build();
@@ -28,6 +29,7 @@ public class ChatFlowBuilder
                 .Condition("Is Start Command?", (context) => context.IsCommand("start"))
                 .Do("SendWelcomeMessage", (context) => context.SendWelcomeMessage())
                 .Do("SaveInitialPlayerInformation", (context) => context.SaveInitialPlayerInformation())
+                .Do("SendCommandsList", (context) => context.SendCommandsList())
             .End()
             .Build();
     }
@@ -72,7 +74,7 @@ public class ChatFlowBuilder
     {
         return FluentBuilder.Create<GameContext>()
             .Sequence("Help")
-                .Condition("Is Help Command?", (context) => context.IsCommand("help"))
+                .Condition("Is Help Command?", (context) => context.IsCommand("howtoplay"))
                 .Do("SendInstructions", (context) => context.SendInstructions())
             .End()
             .Build();
@@ -84,6 +86,16 @@ public class ChatFlowBuilder
             .Sequence("Statistics")
                 .Condition("Is Statistics Command?", (context) => context.IsCommand("stats"))
                 .Do("SendStatistics", (context) =>  context.SendStatistics())
+            .End()
+            .Build();
+    }
+
+    private IBehaviour<GameContext> ShowCommands()
+    {
+        return FluentBuilder.Create<GameContext>()
+            .Sequence("ShowCommands")
+                .Condition("Is ShowCommands Command?", (context) => context.IsCommand("help"))
+                .Do("ShowCommandsList", (context) =>  context.SendCommandsList())
             .End()
             .Build();
     }

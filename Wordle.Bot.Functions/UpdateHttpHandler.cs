@@ -13,6 +13,9 @@ using WordleGame = Wordle.Engine.Game;
 using Wordle.Engine;
 using System.Text;
 using BehaviourTree;
+using Microsoft.Extensions.Localization;
+using Wordle.Bot.Functions.Resources;
+using System.Globalization;
 
 namespace Wordle.Bot.Functions
 {
@@ -20,12 +23,15 @@ namespace Wordle.Bot.Functions
     {
         private readonly WordleGame _game;
         private readonly IBehaviour<GameContext> _behaviour;
+        private readonly IStringLocalizer<Messages> _localizer;
         private readonly TelegramBotClient _botClient;
 
-        public UpdateHttpHandler(WordleGame game, TelegramBotClient botClient, IBehaviour<GameContext> chatBehaviour)
+        public UpdateHttpHandler(WordleGame game, TelegramBotClient botClient, IBehaviour<GameContext> chatBehaviour,
+                                 IStringLocalizer<Messages> localizer)
         {
             _game = game;
             _behaviour = chatBehaviour;
+            _localizer = localizer;
             _botClient = botClient;
         }
 
@@ -38,6 +44,8 @@ namespace Wordle.Bot.Functions
             Update update =  JsonConvert.DeserializeObject<Update>(requestBody);
             if (update != null && update.Message != null)
             {
+                CultureInfo.CurrentCulture = CultureInfo.CurrentUICulture = new CultureInfo(update.Message.From?.LanguageCode ?? "en-US");
+                string test = _localizer["Welcome"].Value;
                 var gameContext = new GameContext()
                 {
                     ChatId = update.Message.Chat.Id,
@@ -47,7 +55,8 @@ namespace Wordle.Bot.Functions
                     PlayerFirstName = update.Message.From?.FirstName ?? update.Message.From?.Username ?? "Player",
                     PlayerLastName = update.Message.From?.LastName ?? string.Empty,
                     PlayerUserName = update.Message.From?.Username ?? string.Empty,
-                    Game = _game
+                    Game = _game,
+                    Localizer = _localizer
                 };
                 
                 log.LogInformation("Received message from chat {ChatId} ", gameContext.ChatId);
@@ -63,7 +72,7 @@ namespace Wordle.Bot.Functions
                 catch(Exception ex)
                 {
                     log.LogError(ex, "Error while processing message {Message} from chat {ChatId}", gameContext.Message, gameContext.ChatId);
-                    await _botClient.SendTextMessageAsync(gameContext.ChatId, "Sorry, something went wrong processing your message. 😥 Please try again later.");
+                    await _botClient.SendTextMessageAsync(gameContext.ChatId, _localizer["UnexpectedError"]);
                     throw;
                 }
             }

@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace Wordle.Engine.Dictionaries
 {
     public static class WordsDictionaries
@@ -7,5 +9,16 @@ namespace Wordle.Engine.Dictionaries
             EnglishWordleOriginal.Instance,
             Italian.Instance,
         };
+        
+        public static IWordsDictionary GetDefaultDictionaryFromCulture()
+        {
+            switch(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName)
+            {
+                case "it":
+                    return Italian.Instance;
+                default:
+                    return EnglishWordleOriginal.Instance;
+            }
+        }
     }
 }

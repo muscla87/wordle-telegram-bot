@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -19,11 +21,6 @@ internal static class ChatBotBehaviourFunctions
     {
         return context.Message.StartsWith($"/{command}", StringComparison.OrdinalIgnoreCase) ||
                context.Message.StartsWith($"/{command} ", StringComparison.OrdinalIgnoreCase);
-    }
-
-    public static bool IsMessage(this GameContext context, string message)
-    {
-        return context.Message.Equals(message, StringComparison.OrdinalIgnoreCase);
     }
 
     public static bool IsGameInProgress(this GameContext context)
@@ -53,7 +50,7 @@ internal static class ChatBotBehaviourFunctions
             context.Game.SaveDictionaryName(context.ChatId, dictionaryName).Wait();
             botClient.SendTextMessageAsync(chatId: context.ChatId,
                                             parseMode: ParseMode.MarkdownV2,
-                                            text: $"👍 I'll pick a word from the selected dictionary for the next game\\!",
+                                            text: context.Localizer["DictionaryUpdateConfirmation"],
                                             replyMarkup: new ReplyKeyboardRemove()).Wait();
             return BehaviourStatus.Succeeded;
         }
@@ -68,7 +65,7 @@ internal static class ChatBotBehaviourFunctions
         var botClient = context.BotClient;
          var buttons = WordsDictionaries.All.Select(x => new KeyboardButton($"/changedictionary {x.Name}")).ToArray();
         var rkm = new ReplyKeyboardMarkup(buttons);
-        botClient.SendTextMessageAsync(context.ChatId, "Please select the dictionary you want to use.",replyMarkup: rkm).Wait();
+        botClient.SendTextMessageAsync(context.ChatId, context.Localizer["DictionaryUpdatePrompt"], replyMarkup: rkm).Wait();
         return BehaviourStatus.Succeeded;
     }
 
@@ -77,7 +74,7 @@ internal static class ChatBotBehaviourFunctions
         var botClient = context.BotClient;
         botClient.SendTextMessageAsync(chatId: context.ChatId,
                                         parseMode: ParseMode.MarkdownV2,
-                                        text: $"✨Welcome✨ *{context.PlayerFirstName}*\\! I am happy you came here to play ❤️\nSend /newgame command to start playing\\!").Wait();
+                                        text: string.Format(context.Localizer["Welcome"], context.PlayerFirstName)).Wait();
         return BehaviourStatus.Succeeded;
     }
 
@@ -92,7 +89,7 @@ internal static class ChatBotBehaviourFunctions
     {
         var botClient = context.BotClient;
         botClient.SendTextMessageAsync(chatId: context.ChatId,
-                                        text: $"🎮 A game is in progress. Are you able to guess the word? 🕹️").Wait();
+                                        text: context.Localizer["GameInProgressError"]).Wait();
         return BehaviourStatus.Succeeded;
     }
 
@@ -104,13 +101,6 @@ internal static class ChatBotBehaviourFunctions
 
 public static BehaviourStatus SendInstructions(this GameContext context)
     {
-        var instructions = @"Guess the WORD in six tries\.
-Each guess must be a valid five\-letter word\. Send a message with your word to submit\.
-After each guess, the shape of the characters will change to show how close your guess was to the word\.
-Examples
-
-*Start typing your guess and send it to me\!*\.";
-
         byte[] bytes = Convert.FromBase64String(Constants.Base64ExampleScreenshot);
         using (MemoryStream ms = new MemoryStream(bytes))
         {
@@ -118,7 +108,7 @@ Examples
             botClient.SendPhotoAsync(chatId: context.ChatId,
                                         photo: new InputOnlineFile(ms),
                                         parseMode: ParseMode.MarkdownV2,
-                                        caption: instructions).Wait();
+                                        caption: context.Localizer["InstructionsCaption"]).Wait();
         }
         return BehaviourStatus.Succeeded;
     }
@@ -140,13 +130,13 @@ Examples
             var errorMessage = $"🙇 Sorry, I can't accept this word";
             switch(result) {
                  case Engine.WordValidationResult.TooLong:
-                    errorMessage = $"🙇 Sorry, I can't accept this word because is too long";
+                    errorMessage = context.Localizer["WordTooLongError"];
                     break;
                 case Engine.WordValidationResult.TooShort:
-                    errorMessage = $"🙇 Sorry, I can't accept this word because is too short";
+                    errorMessage = context.Localizer["WordTooShortError"];
                     break;
                 case Engine.WordValidationResult.NotInDictionary:
-                    errorMessage = $"🙇 Sorry, this word is not in the game dictionary 📚 🤔";
+                    errorMessage = string.Format(context.Localizer["WordNotInDictionaryError"], context.Localizer[newState.DictionaryName+"DictionaryName"]);
                     break;
             }
 
@@ -187,26 +177,37 @@ Examples
         var dictionaryUrlTemplate = WordsDictionaries.All.FirstOrDefault(x => x.Name == gameState.DictionaryName)?.DefinitionWebSiteUrlFormat;
         var wordToGuess = $"*[{gameState.WordToGuess}]({string.Format(dictionaryUrlTemplate, gameState.WordToGuess.ToLowerInvariant())})*";
         
-        var resultMessage = gameState.IsWordGuessed ? $"🎉 Congratulations, you guessed the word {wordToGuess} in {gameState.Attempts.Count} guesses\\! 🎉" :
-                                                      $"🙇 Sorry, you didn't guess the word {wordToGuess} 🙇";  
+        var resultMessage = gameState.IsWordGuessed ? string.Format( context.Localizer["EndOfGameGuessed"] , wordToGuess, gameState.Attempts.Count):
+                                                      string.Format( context.Localizer["EndOfGameNotGuessed"] , wordToGuess);  
         botClient.SendTextMessageAsync(chatId: context.ChatId,
                                         parseMode: ParseMode.MarkdownV2,
                                         text: resultMessage).Wait();
 
         botClient.SendTextMessageAsync(chatId: context.ChatId,
                                         parseMode: ParseMode.MarkdownV2,
-                                        text:"Send /newgame command to play again").Wait();
+                                        text:context.Localizer["SendNewGameToPlayAgain"]).Wait();
         return BehaviourStatus.Succeeded;
     }
 
-    public static BehaviourStatus SendResetConfirmationMessage(this GameContext context)
+    public static BehaviourStatus SendCommandsList(this GameContext context)
     {
         var botClient = context.BotClient;
+
+        var commands = new List<string>()
+        {
+            "newgame", "howtoplay", "showboard", "changedictionary", "help"
+        };
+
+        StringBuilder messageText = new StringBuilder();
+        foreach (var command in commands)
+        {
+            var commandDescriptionKey = command+"CommandDescription";
+            messageText.AppendLine($"/{command} - {context.Localizer[commandDescriptionKey]}");
+        }
+
         botClient.SendTextMessageAsync(chatId: context.ChatId,
-                                        text: $"Do you want to reset all your statistics? [yes/no]").Wait();
+                                        text: messageText.ToString()).Wait();
+
         return BehaviourStatus.Succeeded;
     }
-
-    
-
 }

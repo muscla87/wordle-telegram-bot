@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.Azure.CosmosRepository;
 using Wordle.Engine.Dictionaries;
 
@@ -19,12 +20,14 @@ namespace Wordle.Engine
             var gameState = (await _gameStateRepository.GetAsync(x => x.Id == chatId.ToString())).FirstOrDefault();
             if (gameState == null)
             {
+                var userDefaultDictionary = WordsDictionaries.GetDefaultDictionaryFromCulture();
                 gameState = new GameState()
                 {
                     Id = chatId.ToString(),
                     FirstName = firstName,
                     LastName = lastName,
-                    UserName = userName
+                    UserName = userName,
+                    CurrentDictionaryName = userDefaultDictionary.Name
                 };
                 await _gameStateRepository.CreateAsync(gameState);
             }
