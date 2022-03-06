@@ -141,7 +141,7 @@ public class GameEngine_Setup_Tests
                             .Returns(Task.FromResult(wordToMatch));
         var gameEngine = new GameEngine(wordsDictionary.Object);
 
-        var maxAttempts = gameEngine.GetGameEngineState().MaxAttempts;
+        var maxAttempts = gameEngine.GetGameEngineState().MaxAttemptsCount;
         for (int i = 0; i < maxAttempts; i++)
         {
             (var wordEvaluationResult, var newGameState) = await gameEngine.SubmitWord(wordToSubmit);
@@ -161,7 +161,7 @@ public class GameEngine_Setup_Tests
         wordsDictionary.Setup(x => x.PickWordToGuess(It.IsAny<string>()))
                             .Returns(Task.FromResult(wordToMatch));
         var gameEngine = new GameEngine(wordsDictionary.Object);
-        var maxAttempts = gameEngine.GetGameEngineState().MaxAttempts;
+        var maxAttempts = gameEngine.GetGameEngineState().MaxAttemptsCount;
         for (int i = 0; i < maxAttempts; i++)
         {
             (_, _) = await gameEngine.SubmitWord(wordToSubmit);

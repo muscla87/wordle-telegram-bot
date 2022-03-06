@@ -46,7 +46,7 @@ static class GameBoardRenderingService
             img.Mutate(ctx =>
             {
                 ctx.Fill(Color.White); // white background image
-                for (int attempIndex = 0; attempIndex < gameEngineState.MaxAttempts; attempIndex++)
+                for (int attempIndex = 0; attempIndex < gameEngineState.MaxAttemptsCount; attempIndex++)
                 {
                     for (int characterIndex = 0; characterIndex < gameEngineState.WordLength; characterIndex++)
                     {

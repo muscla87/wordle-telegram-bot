@@ -47,7 +47,7 @@ internal static class ChatBotBehaviourFunctions
         if (messageParts.Length == 2)
         {
             string dictionaryName = messageParts[1];
-            context.Game.SaveDictionaryName(context.ChatId, dictionaryName).Wait();
+            context.Game.UpdateDictionaryNameAsync(context.ChatId, dictionaryName).Wait();
             botClient.SendTextMessageAsync(chatId: context.ChatId,
                                             parseMode: ParseMode.MarkdownV2,
                                             text: context.Localizer["DictionaryUpdateConfirmation"],
@@ -80,7 +80,7 @@ internal static class ChatBotBehaviourFunctions
 
     public static BehaviourStatus SaveInitialPlayerInformation(this GameContext context)
     {
-        context.Game.SaveInitialPlayerInformation(context.ChatId, context.PlayerFirstName, 
+        context.Game.SaveInitialPlayerInformationAsync(context.ChatId, context.PlayerFirstName, 
                                                   context.PlayerLastName, context.PlayerUserName).Wait();
         return BehaviourStatus.Succeeded;
     }

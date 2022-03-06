@@ -7,15 +7,18 @@ namespace Wordle.Engine
     public class Game
     {
         private readonly IRepository<GameState> _gameStateRepository;
+        private readonly IRepository<PlayerStatistics> _playerStatsRepo;
         public GameEngine GameEngine { get; private set; }
 
-        public Game(IRepository<GameState> gameStateRepository, IWordsDictionaryService wordsDictionaryService)
+        public Game(IRepository<GameState> gameStateRepository, IRepository<PlayerStatistics> playerStatisticsRepository,
+                    IWordsDictionaryService wordsDictionaryService)
         {
             _gameStateRepository = gameStateRepository;
+            _playerStatsRepo = playerStatisticsRepository;
             GameEngine = new GameEngine(wordsDictionaryService);
         }
 
-        public async Task SaveInitialPlayerInformation(long chatId, string firstName, string lastName, string userName)
+        public async Task SaveInitialPlayerInformationAsync(long chatId, string firstName, string lastName, string userName)
         {
             var gameState = (await _gameStateRepository.GetAsync(x => x.Id == chatId.ToString())).FirstOrDefault();
             if (gameState == null)
@@ -40,7 +43,7 @@ namespace Wordle.Engine
             }
         }
 
-        public async Task SaveDictionaryName(long chatId, string dictionaryName)
+        public async Task UpdateDictionaryNameAsync(long chatId, string dictionaryName)
         {
             if(!WordsDictionaries.All.Any(x => x.Name == dictionaryName))
             {
@@ -88,11 +91,14 @@ namespace Wordle.Engine
                 exists = false;
             }
             var gameEngineState = GameEngine.GetGameEngineState();
+            bool shouldSavePlayerStatistics = gameState.CurrentGameState?.CurrentPhase != GamePhase.End && 
+                                              gameEngineState.CurrentPhase == GamePhase.End;
             gameState.CurrentGameState = gameEngineState;
             if (exists)
             {
-                //if new state phase is "End" and previous phase was "Progress", save game stats
                 await _gameStateRepository.UpdateAsync(gameState);
+                if(shouldSavePlayerStatistics)
+                    await UpdateGameStatisticsAsync(gameState);
             }
             else
                 await _gameStateRepository.CreateAsync(gameState);
@@ -105,6 +111,54 @@ namespace Wordle.Engine
             {
                 gameState.CurrentGameState = null;
                 await _gameStateRepository.UpdateAsync(gameState);
+            }
+        }
+
+
+        private async Task UpdateGameStatisticsAsync(GameState gameState)
+        {
+            var currentGame = gameState.CurrentGameState;
+            if (currentGame != null)
+            {
+                //((((x.ChatId == "0" && x.GameMode == "Practice") && x.GameRoomId == "") && x.DictionaryName == "Italian") && x.WordLength == 5) && x.MaxAttemptsCount == 6,
+                var playerStatistics = (await _playerStatsRepo.GetAsync(x => x.ChatId == gameState.Id &&
+                                                                                        x.GameMode == "Practice" &&
+                                                                                        x.GameRoomId == gameState.GameRoomId &&
+                                                                                        x.DictionaryName == currentGame.DictionaryName &&
+                                                                                        x.WordLength == currentGame.WordLength &&
+                                                                                        x.MaxAttemptsCount == currentGame.MaxAttemptsCount
+                                                                                        )).FirstOrDefault();
+
+                if (playerStatistics == null)
+                {
+                    playerStatistics = new PlayerStatistics()
+                    {
+                        ChatId = gameState.Id,
+                        GameMode = "Practice",
+                        GameRoomId = gameState.GameRoomId,
+                        DictionaryName = currentGame.DictionaryName,
+                        WordLength = currentGame.WordLength,
+                        MaxAttemptsCount = currentGame.MaxAttemptsCount,
+                        GamesWonPerAttempt = new int[currentGame.MaxAttemptsCount]
+                    };
+                    await _playerStatsRepo.CreateAsync(playerStatistics);
+                }
+
+                playerStatistics.PlayedGamesCount++;
+                if (currentGame.IsWordGuessed)
+                {
+                    playerStatistics.WonGamesCount++;
+                    playerStatistics.GamesWonPerAttempt[currentGame.Attempts.Count - 1]++;
+                    playerStatistics.CurrentStreak++;
+                    if (playerStatistics.CurrentStreak > playerStatistics.BestStreak)
+                        playerStatistics.BestStreak = playerStatistics.CurrentStreak;
+                }
+                else
+                {
+                    playerStatistics.CurrentStreak = 0;
+                }
+
+                await _playerStatsRepo.UpdateAsync(playerStatistics);
             }
         }
     }
