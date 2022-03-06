@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Linq;
 using System;
+using System.Linq.Expressions;
 
 namespace Wordle.Engine.Test;
 
@@ -13,11 +14,12 @@ public class Game_Tests
 {
     public Mock<IWordsDictionaryService> wordsDictionary = new Mock<IWordsDictionaryService>();
     public Mock<IRepository<GameState>> gameStateRepoMock = new Mock<IRepository<GameState>>();
+    public Mock<IRepository<PlayerStatistics>> playerStatisticsRepoMock = new Mock<IRepository<PlayerStatistics>>();
     private readonly Game game;
 
     public Game_Tests()
     {
-        game = new Game(gameStateRepoMock.Object, wordsDictionary.Object);
+        game = new Game(gameStateRepoMock.Object, playerStatisticsRepoMock.Object, wordsDictionary.Object);
     }
 
     [Fact]
@@ -129,8 +131,47 @@ public class Game_Tests
     }
 
     [Fact]
+    public async Task SaveGameState_GameEnded_ShouldSavePlayerStatistics()
+    {
+        long chatId = 0;
+
+        GameState gameState = new GameState()
+        {
+            Id = chatId.ToString(),
+            CurrentGameState = new GameEngineState()
+                {
+                    CurrentPhase = GamePhase.InProgress,
+                    Attempts =  new List<string>() { "toll", "skip" },
+                    AttemptsMask = new List<PositionMatchMask[]>() {
+                        Enumerable.Range(1,5).Select(x => PositionMatchMask.NotMatched).ToArray(),
+                        Enumerable.Range(1,5).Select(x => PositionMatchMask.NotMatched).ToArray(),
+                    },
+                    IsWordGuessed = false,
+                    WordToGuess = "zzzzz",
+                    DictionaryName = "Italian"
+            }
+        };
+        gameStateRepoMock.Setup(x => x.GetAsync(x => x.Id == chatId.ToString(), default(CancellationToken)))
+                            .Returns(ValueTask.FromResult<IEnumerable<GameState>>(new [] { gameState }));
+        wordsDictionary.Setup(x => x.IsWordValid(gameState.CurrentGameState.WordToGuess, It.IsAny<string>()))
+                                .Returns(Task.FromResult(true));
+
+        await game.LoadGameStateAsync(chatId);
+       
+        await game.GameEngine.SubmitWord("zzzzz"); //this should end the game and trigger statistics saving
+        var gameEngineState = game.GameEngine.GetGameEngineState();
+
+        await game.SaveGameStateAsync(chatId);
+
+        playerStatisticsRepoMock.Verify(x => x.GetAsync( It.IsAny<Expression<Func<PlayerStatistics,bool>>>(), default(CancellationToken)));
+        playerStatisticsRepoMock.Verify(x => x.UpdateAsync(It.IsAny<PlayerStatistics>(), default(CancellationToken)));
+
+        //TODO: add more tests to check statistics are properly updated
+    }
+
+    [Fact]
     public async Task SaveDictionary_WithNonValidDictionaryName_ThrowsArgumentException()
     {
-        await Assert.ThrowsAsync<ArgumentException>(async () => await game.SaveDictionaryName(0, "MISSING"));
+        await Assert.ThrowsAsync<ArgumentException>(async () => await game.UpdateDictionaryNameAsync(0, "MISSING"));
     }
 }

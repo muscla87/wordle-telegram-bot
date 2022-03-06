@@ -128,7 +128,7 @@ namespace Wordle.Engine
             this.IsWordGuessed = gameState.IsWordGuessed;
             this.WordToGuess = gameState.WordToGuess;
             this.WordLength = gameState.WordLength;
-            this.MaxAttempts = gameState.MaxAttempts;
+            this.MaxAttempts = gameState.MaxAttemptsCount;
             this.DictionaryName = gameState.DictionaryName;
         }
 
@@ -154,7 +154,7 @@ namespace Wordle.Engine
                 IsWordGuessed = this.IsWordGuessed,
                 WordToGuess = this.WordToGuess ?? string.Empty,
                 WordLength = this.WordLength,
-                MaxAttempts = this.MaxAttempts,
+                MaxAttemptsCount = this.MaxAttempts,
                 DictionaryName = this.DictionaryName
             };
         } 
