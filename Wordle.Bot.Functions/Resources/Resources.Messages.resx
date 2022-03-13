@@ -60,45 +60,45 @@
             : and then encoded with base64 encoding.
     -->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
         <xsd:choice maxOccurs="unbounded">
           <xsd:element name="metadata">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0"/>
               </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
+              <xsd:attribute name="name" use="required" type="xsd:string"/>
+              <xsd:attribute name="type" type="xsd:string"/>
+              <xsd:attribute name="mimetype" type="xsd:string"/>
+              <xsd:attribute ref="xml:space"/>
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="assembly">
             <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
+              <xsd:attribute name="alias" type="xsd:string"/>
+              <xsd:attribute name="name" type="xsd:string"/>
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="data">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
+              <xsd:attribute ref="xml:space"/>
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="resheader">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
+              <xsd:attribute name="name" type="xsd:string" use="required"/>
             </xsd:complexType>
           </xsd:element>
         </xsd:choice>
@@ -119,31 +119,31 @@
   </resheader>
   <data name="Welcome" xml:space="preserve">
     <value>✨Welcome✨ *{0}*\! I am happy you came here to play ❤️	Send /newgame command to start playing\!</value>
-    <comment />
+    <comment/>
   </data>
   <data name="DictionaryUpdateConfirmation" xml:space="preserve">
     <value>👍 I'll pick a word from the selected dictionary for the next game\!</value>
-    <comment />
+    <comment/>
   </data>
   <data name="DictionaryUpdatePrompt" xml:space="preserve">
     <value>Please select the dictionary you want to use.</value>
-    <comment />
+    <comment/>
   </data>
   <data name="GameInProgressError" xml:space="preserve">
     <value>🎮 Please complete the game in progress before starting a new one 🕹</value>
-    <comment />
+    <comment/>
   </data>
   <data name="InstructionsCaption" xml:space="preserve">
     <value>Guess the WORD in six tries\.	*Start typing your guess and send it to me\!*</value>
-    <comment />
+    <comment/>
   </data>
   <data name="WordTooLongError" xml:space="preserve">
     <value>🙇 Sorry, I can't accept this word because is *too long*</value>
-    <comment />
+    <comment/>
   </data>
   <data name="WordTooShortError" xml:space="preserve">
     <value>🙇 Sorry, I can't accept this word because is *too short*</value>
-    <comment />
+    <comment/>
   </data>
   <data name="WordNotInDictionaryError" xml:space="preserve">
     <value>🙇 Sorry, this word is *not in the game dictionary*: {0} 📚 🤔</value>
@@ -159,35 +159,66 @@
   </data>
   <data name="SendNewGameToPlayAgain" xml:space="preserve">
     <value>Send /newgame command to play again</value>
-    <comment />
+    <comment/>
   </data>
   <data name="UnexpectedError" xml:space="preserve">
     <value>Sorry, something went wrong processing your message. 😥 Please try again later.</value>
-    <comment />
+    <comment/>
   </data>
   <data name="newgameCommandDescription" xml:space="preserve">
     <value>Starts a new game if the current one is over</value>
-    <comment />
+    <comment/>
   </data>
   <data name="howtoplayCommandDescription" xml:space="preserve">
     <value>Shows game rules and how to play information</value>
-    <comment />
+    <comment/>
   </data>
   <data name="showboardCommandDescription" xml:space="preserve">
     <value>Shows the current game board</value>
-    <comment />
+    <comment/>
   </data>
   <data name="changedictionaryCommandDescription" xml:space="preserve">
     <value>Change the dictionary language (i.e. English, Italian, etc..)</value>
-    <comment />
+    <comment/>
   </data>
   <data name="ItalianDictionaryName" xml:space="preserve">
     <value>Italian</value>
+    <comment/>
   </data>
   <data name="EnglishWordleOriginalDictionaryName" xml:space="preserve">
     <value>English</value>
+    <comment/>
   </data>
   <data name="helpCommandDescription" xml:space="preserve">
     <value>Shows the command list</value>
+    <comment/>
+  </data>
+  <data name="StatisticsDictionaryLine" xml:space="preserve">
+    <value>📖 {DictionaryName}</value>
+    <comment/>
+  </data>
+  <data name="StatisticsWinRateLine" xml:space="preserve">
+    <value>\#{WinRatePosition}🏅  *Games*  {GamesPlayedCount}  🏆 {WinRate}%</value>
+    <comment/>
+  </data>
+  <data name="StatisticsStreakLine" xml:space="preserve">
+    <value>\#{BestStreakPosition}🏅  *Streak* {CurrentStreak} \(best {BestStreak}\)</value>
+    <comment/>
+  </data>
+  <data name="StatisticsPointsLine" xml:space="preserve">
+    <value>\#{PointsPosition}🏅  *Points* {TotalPoints} \({AveragePoints} per game\)</value>
+    <comment/>
+  </data>
+  <data name="StatisticsEndingLine" xml:space="preserve">
+    <value>Share this message to brag with your friends ✨ Play wordle on t\.me/WordleChatBot</value>
+    <comment/>
+  </data>
+  <data name="StatisticsNoDataAvailable" xml:space="preserve">
+    <value>There aren't enough games played to show statistics</value>
+    <comment/>
+  </data>
+  <data name="statsCommandDescription" xml:space="preserve">
+    <value>Show played games statistics and your ranking</value>
+    <comment/>
   </data>
 </root>

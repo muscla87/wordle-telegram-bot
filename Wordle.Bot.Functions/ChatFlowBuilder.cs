@@ -120,6 +120,7 @@ public class ChatFlowBuilder
                     .End()
                     .Do("SendGameStatus", (context) => context.SendGameSummary())
                     .Do("EndOfGameMessage", (context) => context.SendEndOfGameMessage())
+                    .Do("SendStatistics", (context) =>  context.SendStatistics())
                 .End()
             .End()
             .Build();
