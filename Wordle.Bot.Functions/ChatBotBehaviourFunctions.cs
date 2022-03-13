@@ -169,10 +169,10 @@ public static BehaviourStatus SendInstructions(this GameContext context)
         for (int i = 0; i < statistics.GamesWonPerAttempt.Length; i++)
         {
             var wonCount = statistics.GamesWonPerAttempt[i];
-            var rate = wonCount / (float)maxValue;
+            var rate = maxValue == 0 ? 0 : wonCount / (float)maxValue;
             var filledQuantsCount = (int)Math.Floor(rate * numberOfQuants);
-            var filledSquares = string.Join("", Enumerable.Range(0, filledQuantsCount).Select(x => "🟩"));
-            var emptySquares = string.Join("", Enumerable.Range(0, numberOfQuants-filledQuantsCount).Select(x => "⬜️"));
+            var filledSquares = filledQuantsCount == 0 ? string.Empty : string.Join("", Enumerable.Range(0, filledQuantsCount).Select(x => "🟩"));
+            var emptySquares = numberOfQuants-filledQuantsCount == 0 ? string.Empty : string.Join("", Enumerable.Range(0, numberOfQuants-filledQuantsCount).Select(x => "⬜️"));
             statisticsSb.AppendLine($"*{i + 1}* \\- {filledSquares}{emptySquares} {wonCount}");
         }
         return statisticsSb.ToString();
