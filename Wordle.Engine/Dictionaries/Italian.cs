@@ -1127,7 +1127,6 @@ public class Italian : IWordsDictionary
 "LIDIO",
 "LIETO",
 "LIEVE",
-"LIGHT",
 "LIGIA",
 "LIGIO",
 "LILLA",
@@ -2263,7 +2262,6 @@ public class Italian : IWordsDictionary
 "UMIDO",
 "UMILE",
 "UMORE",
-"UNDER",
 "UNICO",
 "UNIRE",
 "UNITA",
@@ -8279,6 +8277,8 @@ public class Italian : IWordsDictionary
 "YUCCA",
 "YURTA",
 "ZLOTY",
+"LIGHT",
+"UNDER",
 
     };
 
