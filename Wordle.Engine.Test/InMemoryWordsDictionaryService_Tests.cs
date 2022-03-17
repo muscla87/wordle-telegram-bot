@@ -49,7 +49,7 @@ public class InMemoryWordsDictionaryService_Tests
     [MemberData(nameof(AllDictionaries))]
     public async Task ExistingDictionary_PickupWord_ExpectedExistingValue(IWordsDictionary dictionary)
     {
-        Assert.True(dictionary.Words.Contains(await dictionaryService.PickWordToGuess(dictionary.Name)));
+        Assert.Contains(await dictionaryService.PickWordToGuess(dictionary.Name),dictionary.Words);
     }
 
     [Fact]
