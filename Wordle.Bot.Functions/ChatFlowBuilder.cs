@@ -119,6 +119,7 @@ public class ChatFlowBuilder
                         .Condition("IsGameInProgress?", (context) => context.IsGameInProgress())
                     .End()
                     .Do("SendGameStatus", (context) => context.SendGameSummary())
+                    .Do("SendStatistics", (context) =>  context.SendStatistics())
                     .Do("EndOfGameMessage", (context) => context.SendEndOfGameMessage())
                 .End()
             .End()

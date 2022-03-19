@@ -51,12 +51,15 @@ namespace Wordle.Bot.Functions
                     ChatId = update.Message.Chat.Id,
                     MessageId = update.Message.MessageId,
                     Message = SanitizeInput(update.Message.Text), 
-                    BotClient = _botClient,
                     PlayerFirstName = update.Message.From?.FirstName ?? update.Message.From?.Username ?? "Player",
                     PlayerLastName = update.Message.From?.LastName ?? string.Empty,
                     PlayerUserName = update.Message.From?.Username ?? string.Empty,
                     Game = _game,
-                    Localizer = _localizer
+                    Services = new ContextServices()
+                    {
+                        BotClient = _botClient,
+                        Localizer = _localizer
+                    }
                 };
                 
                 log.LogInformation("Received message from chat {ChatId} ", gameContext.ChatId);

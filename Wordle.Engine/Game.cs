@@ -114,13 +114,42 @@ namespace Wordle.Engine
             }
         }
 
+        public async Task<PlayerStatisticsWithPositions?> GetPlayerStatisticsAsync(long chatId)
+        {
+            var gameState = (await _gameStateRepository.GetAsync(x => x.Id == chatId.ToString())).FirstOrDefault();
+            var dictionaryName = gameState?.CurrentDictionaryName ?? EnglishWordleOriginal.Instance.Name;
+            var playerStatistics = (await _playerStatsRepo.GetAsync(x => x.ChatId == chatId.ToString() &&
+                                                                        x.GameMode == "Practice" &&
+                                                                        x.DictionaryName == dictionaryName)).FirstOrDefault();
+            PlayerStatisticsWithPositions? playerStatisticsWithPositions = null;
+            if (playerStatistics != null)
+            {
+                playerStatisticsWithPositions = new PlayerStatisticsWithPositions(playerStatistics);
+                playerStatisticsWithPositions.WinRatePosition = 
+                                (await _playerStatsRepo.GetAsync(x => x.ChatId != chatId.ToString() &&
+                                                                        x.GameMode == "Practice" &&
+                                                                        x.DictionaryName == dictionaryName &&
+                                                                        x.WinRate > playerStatistics.WinRate)).Count() + 1;
+                playerStatisticsWithPositions.BestStreakPosition = 
+                                (await _playerStatsRepo.GetAsync(x => x.ChatId != chatId.ToString() &&
+                                                                        x.GameMode == "Practice" &&
+                                                                        x.DictionaryName == dictionaryName &&
+                                                                        x.BestStreak > playerStatistics.BestStreak)).Count() + 1;
+                playerStatisticsWithPositions.PointsPosition = 
+                                (await _playerStatsRepo.GetAsync(x => x.ChatId != chatId.ToString() &&
+                                                                        x.GameMode == "Practice" &&
+                                                                        x.DictionaryName == dictionaryName &&
+                                                                        x.AveragePoints > playerStatistics.AveragePoints)).Count() + 1;
+
+            }
+            return playerStatisticsWithPositions;
+        }
 
         private async Task UpdateGameStatisticsAsync(GameState gameState)
         {
             var currentGame = gameState.CurrentGameState;
             if (currentGame != null)
             {
-                //((((x.ChatId == "0" && x.GameMode == "Practice") && x.GameRoomId == "") && x.DictionaryName == "Italian") && x.WordLength == 5) && x.MaxAttemptsCount == 6,
                 var playerStatistics = (await _playerStatsRepo.GetAsync(x => x.ChatId == gameState.Id &&
                                                                                         x.GameMode == "Practice" &&
                                                                                         x.GameRoomId == gameState.GameRoomId &&

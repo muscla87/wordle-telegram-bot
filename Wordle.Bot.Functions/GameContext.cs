@@ -17,7 +17,11 @@ public class GameContext
     public string PlayerLastName { get; set; }
     public string PlayerUserName { get; set; }
 
-    //Services
+    public ContextServices Services { get; set; } = new ContextServices();
+}
+
+public class ContextServices
+{
     public TelegramBotClient BotClient { get; set; }
     public IStringLocalizer<Messages> Localizer { get; set; }
 }
